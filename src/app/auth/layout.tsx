@@ -1,7 +1,9 @@
+import AuthLayoutClient from "./AuthLayoutClient";
+
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <main className="items-center justify-center py-9">{children}</main>;
+  return <AuthLayoutClient>{children}</AuthLayoutClient>;
 }

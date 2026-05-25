@@ -2,7 +2,7 @@
 import { FieldGroup } from "@/components/ui";
 import { FormLayout, InputField } from "@/components/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema , type SignUpFormValues } from "@/lib/validation/auth";
+import { signUpSchema, type SignUpFormValues } from "@/lib/validation/auth";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/components/providers/auth-provider";
 
@@ -31,7 +31,7 @@ export function SignupForm() {
         {/* Email */}
         <InputField<SignUpFormValues, "email">
           name="email"
-          placeholder="Your email"
+          placeholder="Enter your email address"
           label="Email"
           autoComplete="email"
           required
@@ -41,7 +41,7 @@ export function SignupForm() {
         <InputField<SignUpFormValues, "password">
           name="password"
           label="Password"
-          placeholder={"Your password"}
+          placeholder={"Enter your password"}
           autoComplete="new-password"
           type="password"
           required

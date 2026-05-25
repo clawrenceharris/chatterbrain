@@ -138,11 +138,11 @@ export function FormLayout<T extends FieldValues>({
           aria-describedby={description}
         >
           <FieldGroup className="h-full w-full flex-1 justify-evenly">
-            <FieldContent>
+            <FieldContent className="space-y-3">
               {title && (
                 <FieldTitle
                   className={cn(
-                    "font-heading text-2xl",
+                    "font-heading text-3xl font-bold",
                     !showsTitle ? "sr-only" : "",
                     titleClassName,
                   )}

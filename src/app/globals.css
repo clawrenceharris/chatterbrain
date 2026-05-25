@@ -619,7 +619,6 @@
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
-
 }
 
 /* Respect OS-level reduced motion no matter which theme is selected. */
@@ -638,7 +637,6 @@
   }
 }
 @layer base {
- 
   * {
     @apply border-border outline-ring/50;
   }
@@ -652,14 +650,25 @@
   h3 {
     @apply font-heading;
   }
-
+  main {
+    @apply relative flex h-dvh w-full flex-1 flex-row overflow-hidden;
+  }
 }
 
 @layer components {
+  .page {
+    @apply flex h-full w-full flex-col justify-between gap-3 overflow-hidden p-4;
+  }
+  .gradient-background {
+    @apply to-primary from-accent dark:to-background dark:from-background bg-linear-to-br;
+  }
+  .page-center {
+    @apply to-primary from-accent dark:to-background dark:from-background flex h-full w-full items-center justify-center bg-linear-to-br;
+  }
   .centered {
     @apply flex h-full w-full flex-1 items-center justify-center;
   }
-  
+
   .flex-cc {
     @apply flex items-center justify-center;
   }
@@ -669,5 +678,31 @@
   .font-body {
     font-size-adjust: 0.47;
   }
+}
 
+/*
+ * Chrome autofill overrides — kept outside @layer so they beat UA styles.
+ * Uses inset box-shadow to paint over Chrome's blue autofill background.
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--input) inset !important;
+  box-shadow: 0 0 0 1000px var(--input) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  font-family: var(--font-body) !important;
+  font-size-adjust: 0.47;
+  transition:
+    background-color 5000s ease-in-out 0s,
+    color 5000s ease-in-out 0s;
 }

@@ -2,7 +2,7 @@
 import { FieldGroup } from "@/components/ui";
 import { FormLayout, InputField } from "@/components/form";
 import Link from "next/link";
-import {loginSchema, type LoginFormValues } from "@/lib/validation/auth";
+import { loginSchema, type LoginFormValues } from "@/lib/validation/auth";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -32,7 +32,7 @@ export function LoginForm() {
         {/* Email */}
         <InputField<LoginFormValues, "email">
           name="email"
-          placeholder="Email"
+          placeholder="Enter your email address"
           label="Email"
           required
           autoComplete="current-email"
@@ -41,7 +41,7 @@ export function LoginForm() {
         {/* Password */}
         <div className="space-y-2">
           <InputField<LoginFormValues, "password">
-            placeholder="Your password"
+            placeholder="Enter your password"
             type="password"
             label="Password"
             name="password"

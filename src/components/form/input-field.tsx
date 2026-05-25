@@ -55,20 +55,20 @@ function InputFieldInner<T extends FieldValues, U extends Path<T>>(
     <Field ref={ref}>
       <FieldContent>
         <FieldLabel
-          className={!showsLabel ? "sr-only" : ""}
+          className={cn(
+            !showsLabel && "sr-only",
+            "font-body text-lg font-bold",
+          )}
           htmlFor={field.name}
         >
           {label}{" "}
           {required && (
-            <span className="text-primary font-bold">(required)</span>
+            <span className="text-primary text-sm font-normal">(required)</span>
           )}
         </FieldLabel>
         {description && (
           <FieldDescription
-            className={cn(
-              "text-xs leading-relaxed",
-              !showsDescription && "sr-only",
-            )}
+            className={cn("text-sm", !showsDescription && "sr-only")}
           >
             {description}
           </FieldDescription>
@@ -83,6 +83,7 @@ function InputFieldInner<T extends FieldValues, U extends Path<T>>(
           {...inputProps}
           aria-required={required}
           id={field.name}
+          className="rounded-md py-7 font-normal"
           placeholder={`${placeholder} ${!required ? "(Optional)" : ""}`}
           aria-invalid={fieldState.invalid}
         />

@@ -6,7 +6,7 @@ import "./globals.css";
 const dongle = Dongle({
   subsets: ["latin"],
   variable: "--font-body",
-  weight: "400",
+  weight: ["300", "400", "700"],
 });
 
 const lexendDeca = Lexend_Deca({
