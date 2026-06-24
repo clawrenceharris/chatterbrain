@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Dongle, Lexend_Deca } from "next/font/google";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import "./globals.css";
 
 const dongle = Dongle({
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dongle.variable} ${lexendDeca.variable} h-full antialiased`}
+      className={`${dongle.variable} ${lexendDeca.variable} font-body antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

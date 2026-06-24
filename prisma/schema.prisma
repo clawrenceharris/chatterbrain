@@ -1,0 +1,449 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model UserProfile {
+  id            String         @id @default(uuid())
+  userId        String         @unique
+  firstName     String
+  lastName      String?
+  avatarUrl     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  encounters    Encounter[]
+  scenarioLikes ScenarioLike[]
+  scenarioSaves ScenarioSave[]
+}
+
+model Actor {
+  id                 String      @id @default(cuid())
+  slug               String      @unique
+  firstName          String
+  lastName           String
+  description        String
+  voiceId            String
+  personalityTraits  String[]
+  communicationStyle String?
+  avatarUrl          String?
+  color              String?
+  encounters         Encounter[]
+  scenarios          Scenario[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@index([slug])
+}
+
+model Encounter {
+  id String @id @default(cuid())
+
+  userId String
+  user   UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  scenarioId String
+  scenario   Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  status EncounterStatus @default(IN_PROGRESS)
+
+  actorId String
+  actor   Actor  @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  // User-provided onboarding values for this specific run.
+  // Example: { "roommateName": "Jordan", "noiseType": "gaming after midnight" }
+  variableValues Json?
+
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  abandonedAt DateTime?
+
+  turns      ConversationTurn[]
+  helperUses HelperUse[]
+  review     EncounterReview?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([scenarioId])
+  @@index([status])
+  @@index([actorId])
+  @@index([startedAt])
+}
+
+// -----------------------------------------------------------------------------
+// Conversation Turns
+// Stores each message in an encounter.
+// -----------------------------------------------------------------------------
+
+model ConversationTurn {
+  id String @id @default(cuid())
+
+  encounterId String
+  encounter   Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  role        ConversationRole
+  speakerId   String?
+  speakerName String?
+  content     String
+
+  createdAt DateTime @default(now())
+
+  helperUses HelperUse[]
+
+  reviewItems EncounterReviewItem[]
+
+  @@index([encounterId])
+  @@index([role])
+  @@index([createdAt])
+}
+
+// -----------------------------------------------------------------------------
+// Helper Uses
+// Tracks when the user used helpers like Tone Spectrum, Rephraser, Cue Detector.
+// -----------------------------------------------------------------------------
+
+model HelperUse {
+  id String @id @default(cuid())
+
+  encounterId String
+  encounter   Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  targetTurnId String?
+  targetTurn   ConversationTurn? @relation(fields: [targetTurnId], references: [id], onDelete: SetNull)
+
+  helperId HelperId
+
+  // For transform-input tools, store draft before/after.
+  inputText  String?
+  outputText String?
+
+  // For popover / analysis tools, store structured results.
+  result Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([encounterId])
+  @@index([targetTurnId])
+  @@index([helperId])
+}
+
+// -----------------------------------------------------------------------------
+// Encounter Review
+// AI-generated review after the user completes an encounter.
+// -----------------------------------------------------------------------------
+
+model EncounterReview {
+  id String @id @default(cuid())
+
+  encounterId String    @unique
+  encounter   Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  summary     String
+  // Example:
+  // {
+  //   "turnId": "...",
+  //   "originalText": "ok",
+  //   "whyItMatters": "This may sound distant",
+  //   "suggestedRewrite": "I hear you. Do you want to talk more about it?"
+  // }
+  retryMoment Json?
+
+  // Skill score snapshot from this session.
+  // Example: { "EMPATHY": 82, "CLARITY": 74 }
+  skillScores Json
+
+  unlockedBadgeIds String[]
+
+  createdAt DateTime @default(now())
+
+  items EncounterReviewItem[]
+
+  @@index([encounterId])
+}
+
+model EncounterReviewItem {
+  id String @id @default(cuid())
+
+  reviewId String
+  review   EncounterReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  type      ReviewItemType
+  criterion SocialSkill
+
+  title       String
+  description String
+  evidence    ConversationTurn @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  evidenceId  String
+  suggestion  String?
+
+  xpEarned   Int    @default(10)
+  confidence Float?
+
+  createdAt DateTime @default(now())
+
+  @@index([reviewId])
+  @@index([type])
+  @@index([evidenceId])
+  @@index([criterion])
+}
+
+model ScenarioDomain {
+  scenarioId String
+  domainId   String
+
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  domain   Domain   @relation(fields: [domainId], references: [id], onDelete: Cascade)
+
+  @@id([scenarioId, domainId])
+  @@index([domainId])
+  @@index([scenarioId])
+}
+
+// -----------------------------------------------------------------------------
+// Domains
+// -----------------------------------------------------------------------------
+// A domain is a category of scenarios.
+// Examples:
+// - Dating
+// - Friendships
+// - Family
+// - Work
+// - School
+// - Other
+// -----------------------------------------------------------------------------
+
+model Domain {
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  title            String
+  description      String
+  relatedDomains   Domain[]         @relation("RelatedDomains")
+  relatedToDomains Domain[]         @relation("RelatedDomains")
+  scenarios        ScenarioDomain[]
+  primaryScenarios Scenario[]     @relation("PrimaryDomain")
+  secondaryScenarios Scenario[]     @relation("SecondaryDomain")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  imageUrl         String?
+  backgroundImageUrl String?
+}
+
+// -----------------------------------------------------------------------------
+// Search History
+// -----------------------------------------------------------------------------
+// Tracks the user's search history.
+// -----------------------------------------------------------------------------
+
+model SearchHistory {
+  id        String   @id @default(cuid())
+  query     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([query])
+  @@index([createdAt])
+}
+
+// -----------------------------------------------------------------------------
+// Scenario Likes and Saves
+// -----------------------------------------------------------------------------
+// Tracks when the user likes a scenario or saves it to their library.
+// -----------------------------------------------------------------------------
+
+model ScenarioLike {
+  id         String      @id @default(cuid())
+  userId     String
+  user       UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  scenarioId String
+  scenario   Scenario    @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([userId, scenarioId])
+  @@index([userId])
+  @@index([scenarioId])
+}
+
+model ScenarioSave {
+  id         String      @id @default(cuid())
+  userId     String
+  user       UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  scenarioId String
+  scenario   Scenario    @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([userId, scenarioId])
+  @@index([userId])
+  @@index([scenarioId])
+}
+
+// -----------------------------------------------------------------------------
+// Scenarios
+// The actual playable social situation.
+// Examples:
+// - Confronting a Disruptive Roommate
+// - Meeting Your New Coworker
+// - Texting Back After Two Weeks
+// -----------------------------------------------------------------------------
+
+model Scenario {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  // Core identity
+  title            String
+  shortDescription String?
+  status           ScenarioStatus @default(DRAFT)
+  description      String
+
+  difficulty     Difficulty
+  defaultActorId String?
+  defaultActor   Actor?     @relation(fields: [defaultActorId], references: [id], onDelete: SetNull)
+
+  // Scenario-specific context for the actor
+  actorRelationshipType String
+  actorRole             String
+
+  tags        String[]
+  focusSkills SocialSkill[]
+
+  sampleConversation Json?
+
+  // Simulation setup
+  setting        String
+  userRole       String?
+  userGoal       String
+  openingMessage String?
+
+  successCriteria Json
+  variables       Json?
+  contentWarnings String[]
+
+  // Tooling / gamification
+  xpReward Int @default(50)
+
+  // Safety / support
+  supportNote String?
+
+  // Metadata
+  createdById String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  encounters              Encounter[]
+  domains                 ScenarioDomain[]
+  imageUrl                String?
+  actorBackgroundImageUrl String?
+  scenarioLikes           ScenarioLike[]
+  scenarioSaves           ScenarioSave[]
+  primaryDomainId String
+  primaryDomain   Domain @relation("PrimaryDomain", fields: [primaryDomainId], references: [id], onDelete: NoAction)
+  secondaryDomainId String?
+  secondaryDomain   Domain? @relation("SecondaryDomain", fields: [secondaryDomainId], references: [id], onDelete: SetNull)
+  // Recommendations
+  scenarioRecommendations ScenarioRecommendation[] @relation("SourceRecommendations")
+  targetRecommendations   ScenarioRecommendation[] @relation("TargetRecommendations")
+  @@index([primaryDomainId])
+  @@index([secondaryDomainId])
+  @@index([createdById])
+  @@index([createdAt])
+  @@index([difficulty])
+  @@index([status])
+  @@index([defaultActorId])
+}
+
+// -----------------------------------------------------------------------------
+// Scenario Recommendations
+// -----------------------------------------------------------------------------
+// Tracks recommendations between scenarios.
+// -----------------------------------------------------------------------------
+
+model ScenarioRecommendation {
+  id               String  @id @default(cuid())
+  sourceScenarioId String
+  targetScenarioId String
+  reason           String?
+  priority         Int     @default(0)
+
+  sourceScenario Scenario @relation("SourceRecommendations", fields: [sourceScenarioId], references: [id], onDelete: Cascade)
+  targetScenario Scenario @relation("TargetRecommendations", fields: [targetScenarioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceScenarioId, targetScenarioId])
+  @@index([sourceScenarioId])
+  @@index([targetScenarioId])
+}
+
+enum PracticeLane {
+  QUICK_ROUNDS
+  ENCOUNTERS
+  SKILL_DRILLS
+  GROUP_CHAT_LAB
+}
+
+enum Difficulty {
+  GENTLE
+  REALISTIC
+  CHALLENGE
+  DIFFICULT
+}
+
+enum ScenarioStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EncounterStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+enum ConversationRole {
+  USER
+  ACTOR
+}
+
+enum HelperId {
+  TONE_SPECTRUM
+  X_RAY
+  REPHRASER
+  RESPONSE_BUILDER
+  CUE_DETECTOR
+}
+
+enum SocialSkill {
+  EMPATHY
+  ASSERTIVENESS
+  CLARITY
+  ENGAGEMENT
+  SOCIAL_AWARENESS
+  SETTING_BOUNDARIES
+  REPAIR
+  CUE_RECOGNITION
+  SMALL_TALK
+  CONFLICT_NAVIGATION
+  EMOTIONAL_RECOGNITION
+  RELEVANCE
+  TONE_AWARENESS
+  FOLLOW_UP
+  CONVERSATION_FLOW
+  SOCIAL_TIMING
+  PERSPECTIVE_TAKING
+}
+
+enum ReviewItemType {
+  STRENGTH
+  GROWTH_AREA
+}

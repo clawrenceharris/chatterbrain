@@ -1,0 +1,10 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "postman.settings.dotenv-detection-notification-visibility": false,
+  "prettier.withNodeModules": true,
+  "prettier.tabWidth": 3,
+  "prettier.singleAttributePerLine": true,
+  "prettier.jsxSingleQuote": true,
+  "prettier.htmlWhitespaceSensitivity": "strict"
+}
