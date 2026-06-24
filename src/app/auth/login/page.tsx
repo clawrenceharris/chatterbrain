@@ -1,3 +1,12 @@
-export default function LoginPage() {
-  return <div><h1>LoginPage</h1></div>;
+"use client"
+import { LoginForm } from "@/features/auth/presentation/components/forms";
+import { AuthLayout } from "@/features/auth/presentation/components/layout";
+
+export default function Page() {
+         
+  return (
+    <AuthLayout authType="login">
+        <LoginForm />
+    </AuthLayout>
+   );
 }

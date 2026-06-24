@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chatterbrain
 
-## Getting Started
+Chatterbrain is a social-skills practice app for autistic users. It offers a safe, low-pressure space to rehearse difficult or nuanced social situations before they happen in real life.
 
-First, run the development server:
+---
+
+## Product taxonomy
+
+| Concept           | What it is                                                   | Examples                                                     |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Social Domain** | Browse/recommendation grouping (many-to-many with scenarios) | Handling Conflict, Meeting Someone New, Workplace            |
+| **Scenario**      | Primary content — a specific social situation to practice    | Meeting Your New Coworker, Confronting a Disruptive Roommate |
+| **Encounter**     | A user's run through a scenario                              | Start Encounter, Resume Encounter, Review Encounter          |
+| **Actor**         | AI persona with voice and traits                             | Hurt Friend, Blunt Roommate                                  |
+| **Helper**        | Reusable conversation aid during/after an encounter          | Tone Analyzer, Rephraser, Cue Detector                       |
+| **Practice Lane** | Mode of practice (on each scenario)                          | Quick Rounds, Encounter, Group Chat Lab, Skill Drills        |
+
+**Domains ⇄ Scenarios** (many-to-many). **Scenario → Encounter** (one user run). Helpers are separate from the taxonomy.
+
+---
+
+## Tech stack
+
+- **Framework:** [Next.js](https://nextjs.org) (App Router)
+- **UI:** React 19, Tailwind CSS, [shadcn/ui](https://ui.shadcn.com)
+- **Data:** PostgreSQL via [Prisma](https://www.prisma.io)
+- **Auth:** [Supabase Auth](https://supabase.com/docs/guides/auth)
+- **AI:** OpenAI (dialogue, analysis), ElevenLabs (TTS), speech-to-text API routes
+- **Client state:** XState (encounter turn flow), TanStack Query, Zustand (helpers/UI)
+- **Tests:** Vitest, Playwright
+
+---
+
+## Getting started
 
 ```bash
+npm install
+npm run prisma:all     # migrate + generate client
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script                    | Description              |
+| ------------------------- | ------------------------ |
+| `npm run dev`             | Development server       |
+| `npm run build`           | Production build         |
+| `npm run prisma:migrate`  | Apply migrations         |
+| `npm run prisma:generate` | Regenerate Prisma client |
+| `npm run test`            | Vitest                   |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Repository layout
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                    # Routes (thin pages)
+│   └── (app)/
+│       ├── practice/       # Practice scenarios and browse Practice Lanes
+│       └── library/        # Chatterbrain Library
+├── actions/                # Server actions → read services / use cases
+│   ├── scenario/
+│   ├── auth/
+│   └── encounter/
+├── composition/            # make* factories
+├── features/
+│   ├── domain/             # Social Domain browse
+│   ├── scenario/           # Scenario catalog (primary content)
+│   ├── encounter/          # Encounter engine + persistence
+│   ├── helper/             # Helper registry
+│   ├── actor/
+├── components/             # Shared UI + providers
+├── lib/                    # db, constants, queries
+└── types/                  # Shared enums (practice.types)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Bounded contexts follow clean architecture: `domain` → `application` → `infrastructure` → `presentation`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## User-facing language
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use: **Domain**, **Scenario**, **Encounter**, **Actor**, **Helper**, **Practice Lane**.
