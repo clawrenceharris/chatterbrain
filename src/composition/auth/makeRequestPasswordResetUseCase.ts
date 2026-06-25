@@ -6,4 +6,4 @@ export async function makeRequestPasswordResetUseCase() {
   const supabase = await createServerSupabaseClient();
   const authProvider = new SupabaseAuthProvider(supabase);
   return new RequestPasswordResetUseCase(authProvider);
-};
+}

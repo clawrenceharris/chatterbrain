@@ -22,14 +22,14 @@ export class SupabaseAuthProvider implements AuthProvider {
     if (error) throw mapSupabaseAuthError(error);
     return user?.id ?? null;
   }
-  
+
   async getUser(): Promise<User | null> {
     const {
       data: { user },
       error,
     } = await this.client.auth.getUser();
     if (error) throw mapSupabaseAuthError(error);
-    
+
     return user;
   }
   async signInWithEmail(email: string, password: string): Promise<User> {
@@ -47,7 +47,7 @@ export class SupabaseAuthProvider implements AuthProvider {
       error,
     } = await this.client.auth.signUp({
       email,
-      password
+      password,
     });
     if (error) throw mapSupabaseAuthError(error);
     return user;
@@ -65,15 +65,10 @@ export class SupabaseAuthProvider implements AuthProvider {
     if (error) throw mapSupabaseAuthError(error);
   }
 
-  async resetPassword(newPassword: string, token: string): Promise<void> {
-    void token;
+  async resetPassword(newPassword: string): Promise<void> {
     const { error } = await this.client.auth.updateUser({
       password: newPassword,
     });
     if (error) throw mapSupabaseAuthError(error);
   }
-  
-
 }
-
-

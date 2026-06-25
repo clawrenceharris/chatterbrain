@@ -1,12 +1,10 @@
-
-
 import z from "zod";
 
-export const password = z.string()
-.min(8, "Password must be at least 8 characters long")
+export const password = z
+  .string()
+  .min(8, "Password must be at least 8 characters long");
 
-
-export const email = z.string().email("Please enter a valid email address")
+export const email = z.string().email("Please enter a valid email address");
 export const signUpSchema = z.object({
   email,
   password,
@@ -14,7 +12,7 @@ export const signUpSchema = z.object({
 
 export const loginSchema = z.object({
   email,
-  password,
+  password: z.string().min(1, "Please enter your password"),
 });
 
 export const resetPasswordSchema = z.object({
@@ -24,7 +22,6 @@ export const resetPasswordSchema = z.object({
 export const forgotPasswordSchema = z.object({
   email,
 });
-
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
 export type LoginFormValues = z.infer<typeof loginSchema>;

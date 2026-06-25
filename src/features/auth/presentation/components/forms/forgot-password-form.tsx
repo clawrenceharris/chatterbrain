@@ -1,33 +1,26 @@
-"use client"
-import { useState } from 'react'
-
-import { cn } from '@/lib/utils'
+"use client";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui'
-import Link from 'next/link'
-import { FormLayout, InputField } from '@/components/form'
-import { type ForgotPasswordFormValues } from '@/lib/validation/auth'
-import { useRequestPasswordResetForm } from '../../hooks'
+} from "@/components/ui";
+import Link from "next/link";
+import { FormLayout, InputField } from "@/components/form";
+import { type ForgotPasswordFormValues } from "@/lib/validation/auth";
+import { useRequestPasswordResetForm } from "../../hooks";
 
-export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  const [success, setSuccess] = useState(false)
-  const { form, requestPasswordReset } = useRequestPasswordResetForm();
-  const handleRequestPasswordReset = async (data: ForgotPasswordFormValues) => {
-    try {
-      await requestPasswordReset(data);
-      setSuccess(true);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+export function ForgotPasswordForm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  const { form, requestPasswordReset, isLoading, success } =
+    useRequestPasswordResetForm();
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       {success ? (
         <Card>
           <CardHeader>
@@ -35,41 +28,37 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
             <CardDescription>Password reset instructions sent</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive a password reset
-              email.
+            <p className="text-muted-foreground text-sm">
+              If you registered using your email and password, you will receive
+              a password reset email.
             </p>
           </CardContent>
         </Card>
       ) : (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your password
-            </CardDescription>
-          </CardHeader>
           <CardContent>
-            <FormLayout<ForgotPasswordFormValues> 
+            <FormLayout<ForgotPasswordFormValues>
+              enableBeforeUnloadProtection={false}
+              title="Reset Your Password"
+              description="Type in your email and we'll send you a link to reset your password"
               form={form}
-              onSubmit={handleRequestPasswordReset}
-              
+              isLoading={isLoading}
+              onSubmit={requestPasswordReset}
               showsCancelButton={false}
             >
-                
-                  
               <InputField<ForgotPasswordFormValues, "email">
                 name="email"
                 label="Email"
-                placeholder="Your email"
+                placeholder="Enter your email address"
                 required
               />
-            
-             
             </FormLayout>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
-              <Link href="/auth/login" className="font-medium underline text-secondary-400">
+              Already have an account?{" "}
+              <Link
+                href="/auth/login"
+                className="text-secondary font-medium underline"
+              >
                 Login
               </Link>
             </div>
@@ -77,5 +66,5 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
         </Card>
       )}
     </div>
-  )
+  );
 }

@@ -1,6 +1,5 @@
 "use client";
-import { assets } from "@/lib/constants/assets";
-import { cn } from "@/lib/utils";
+import { assets } from "@/lib/constants";
 import Image from "next/image";
 
 export default function AuthLayoutClient({
@@ -24,22 +23,6 @@ export default function AuthLayoutClient({
           {children}
         </div>
       </main>
-    </div>
-  );
-}
-type TileProps = {
-  children: React.ReactNode;
-  className: string;
-};
-function Tile({ children, className }: TileProps) {
-  return (
-    <div
-      className={cn(
-        "text-md absolute z-1 rounded-md bg-black px-5 py-3 font-bold text-nowrap shadow-[2px_4px_12px_0_rgba(0,0,0,0.7)] md:rounded-2xl md:px-8 md:py-6 md:text-5xl",
-        className,
-      )}
-    >
-      {children}
     </div>
   );
 }

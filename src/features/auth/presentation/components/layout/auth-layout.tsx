@@ -1,15 +1,9 @@
 "use client";
 import React from "react";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui";
+import { Card, CardContent, CardFooter } from "@/components/ui";
 import Link from "next/link";
-import Image from "next/image";
+
 interface AuthLayoutProps {
   children: React.ReactNode;
   authType: "login" | "sign-up";

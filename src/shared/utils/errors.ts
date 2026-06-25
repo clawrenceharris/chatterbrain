@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Prisma } from "@/lib/db/prisma";
 import { AppErrorCode } from "@/types";
 export class ApplicationError extends Error {
@@ -53,6 +52,8 @@ export const errorMessages: Record<AppErrorCode, string> = {
   [AppErrorCode.AUTH_RATE_LIMITED]:
     "Slow down a bit. We’re protecting the site.",
   [AppErrorCode.AUTH_UNAUTHENTICATED]: "You need to sign in before doing that.",
+  [AppErrorCode.AUTH_PASSWORD_ALREADY_USED]:
+    "This password looks familiar. Try using a different one.",
   [AppErrorCode.AUTH_PROVIDER_ERROR]: "Authentication failed.",
   [AppErrorCode.USERNAME_ALREADY_EXISTS]:
     "This username already exists. Try a different one.",

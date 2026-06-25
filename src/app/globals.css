@@ -642,7 +642,7 @@
   }
 
   body {
-    @apply text-foreground font-body bg-background selection:bg-selection! selection:text-selection-foreground! relative mx-auto flex h-dvh flex-col overflow-y-auto overscroll-y-contain;
+    @apply text-foreground font-body bg-background selection:bg-selection! selection:text-selection-foreground! relative flex h-dvh w-full w-screen flex-col overflow-y-auto overscroll-y-contain;
   }
 
   h1,
@@ -668,7 +668,9 @@
   .centered {
     @apply flex h-full w-full flex-1 items-center justify-center;
   }
-
+  .faded-col {
+    @apply mask-[linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)];
+  }
   .flex-cc {
     @apply flex items-center justify-center;
   }
@@ -676,7 +678,7 @@
     @apply flex items-center justify-between;
   }
   .font-body {
-    font-size-adjust: 0.47;
+    font-size-adjust: 0.49;
   }
 }
 
