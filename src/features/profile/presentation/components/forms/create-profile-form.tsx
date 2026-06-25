@@ -27,6 +27,7 @@ export function CreateProfileForm({
       form={form}
       enableBeforeUnloadProtection={false}
       isDialog
+      id="create-profile-form"
       showsCancelButton={false}
       onCancel={() => createProfile(getValues())}
       onSubmit={createProfile}
@@ -40,12 +41,16 @@ export function CreateProfileForm({
           placeholder="Enter your first name"
           name="firstName"
           required
+          inputId="create-profile-form-first-name"
           label="What's your first name?"
+          autoComplete="given-name"
         />
         <InputField<CreateProfileFormValues, "lastName">
           placeholder="Enter your last name"
           name="lastName"
+          autoComplete="last-name"
           required={false}
+          inputId="create-profile-form-last-name"
           label="Last name"
         />
       </FieldGroup>

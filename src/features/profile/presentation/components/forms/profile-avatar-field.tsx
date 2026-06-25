@@ -64,7 +64,7 @@ export function ProfileAvatarField<T extends FieldValues, U extends Path<T>>({
         "@md/field-group:items-center @md/field-group:gap-6",
         className,
       )}
-      description="Personalize your profile with a cool pic. (Optional)"
+      description="Personalize your profile with a photo. (Optional)"
       renderInput={({ field, fieldState, inputId }) => (
         <div className="relative flex w-full shrink-0 justify-center @md/field-group:w-auto @md/field-group:justify-start">
           <label

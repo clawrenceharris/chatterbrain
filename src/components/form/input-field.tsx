@@ -100,7 +100,6 @@ function InputFieldInner<T extends FieldValues, U extends Path<T>>(
           {...inputProps}
           aria-required={required}
           id={inputId}
-          className="rounded-md py-7 font-normal"
           placeholder={`${placeholder} ${!required ? "(Optional)" : ""}`}
           aria-invalid={fieldState.invalid}
         />
