@@ -1,7 +1,10 @@
 "use client";
 import { loginAction, signOutAction, signupAction } from "@/actions/auth";
 import { supabase } from "@/lib/supabase/client";
-import { type LoginFormValues, type SignUpFormValues } from "@/lib/validation/auth";
+import {
+  type LoginFormValues,
+  type SignUpFormValues,
+} from "@/lib/validation/auth";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import {
@@ -74,6 +77,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       setIsLoading(true);
       const result = await signupAction(data);
       if (!result.success) {
+        setIsLoading(false);
         throw result.error;
       }
       setUser(result.data);
@@ -94,6 +98,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       setIsLoading(true);
       const result = await loginAction(data);
       if (!result.success) {
+        setIsLoading(false);
         throw result.error;
       }
       setUser(result.data);

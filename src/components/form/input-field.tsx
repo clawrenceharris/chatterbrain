@@ -17,26 +17,35 @@ import {
   Input,
 } from "../ui";
 import { cn } from "@/lib/utils";
+
+type FieldOrientation = "vertical" | "horizontal" | "responsive";
+
 interface InputFieldProps<
   T extends FieldValues,
   U extends Path<T>,
-> extends React.ComponentProps<"input"> {
+> extends Omit<React.ComponentProps<"input">, "name"> {
   label: string;
   name: U;
   showsDescription?: boolean;
   description?: string;
   showsLabel?: boolean;
+  orientation?: FieldOrientation;
+  className?: string;
+  inputId?: string;
   renderInput?: ({
     field,
     fieldState,
+    inputId,
   }: {
     field: ControllerRenderProps<T, U>;
     fieldState: ControllerFieldState;
+    inputId: string;
   }) => React.ReactNode;
 }
+
 function InputFieldInner<T extends FieldValues, U extends Path<T>>(
   props: InputFieldProps<T, U>,
-  ref: React.ForwardedRef<HTMLInputElement>,
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {
     label,
@@ -46,20 +55,28 @@ function InputFieldInner<T extends FieldValues, U extends Path<T>>(
     description,
     required,
     showsLabel = true,
+    orientation = "vertical",
+    inputId: inputIdProp,
     renderInput,
     ...inputProps
   } = props;
   const { control } = useFormContext<T>();
   const { field, fieldState } = useController({ control, name });
+  const inputId = inputIdProp ?? field.name;
+
   return (
-    <Field ref={ref}>
+    <Field
+      ref={ref}
+      orientation={orientation}
+      // className={cn(orientation === "responsive" && "@container/field-group")}
+    >
       <FieldContent>
         <FieldLabel
           className={cn(
             !showsLabel && "sr-only",
             "font-body text-lg font-bold",
           )}
-          htmlFor={field.name}
+          htmlFor={inputId}
         >
           {label}{" "}
           {required && (
@@ -76,13 +93,13 @@ function InputFieldInner<T extends FieldValues, U extends Path<T>>(
       </FieldContent>
 
       {renderInput ? (
-        renderInput({ field, fieldState })
+        renderInput({ field, fieldState, inputId })
       ) : (
         <Input
           {...field}
           {...inputProps}
           aria-required={required}
-          id={field.name}
+          id={inputId}
           className="rounded-md py-7 font-normal"
           placeholder={`${placeholder} ${!required ? "(Optional)" : ""}`}
           aria-invalid={fieldState.invalid}
@@ -97,5 +114,5 @@ export const InputField = forwardRef(InputFieldInner) as <
   T extends FieldValues,
   U extends Path<T>,
 >(
-  props: InputFieldProps<T, U> & React.RefAttributes<HTMLInputElement>,
+  props: InputFieldProps<T, U> & React.RefAttributes<HTMLDivElement>,
 ) => React.ReactElement;

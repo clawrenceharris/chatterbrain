@@ -29,3 +29,5 @@ export * from "./drawer";
 export * from "./input-group";
 export * from "./breadcrumb";
 export * from "./scroll-area";
+export * from "./checkbox";
+export * from "./radio-group";

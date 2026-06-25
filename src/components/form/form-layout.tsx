@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 import { type ReactNode } from "react";
 import {
@@ -20,7 +18,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BeforeUnload } from "@/components/form";
-import { getUserErrorMessage } from "@/shared/utils";
+import { normalizeError } from "@/shared/utils";
 
 export interface FormLayoutProps<T extends FieldValues> {
   children?: ((methods: UseFormReturn<T>) => ReactNode) | ReactNode;
@@ -116,28 +114,27 @@ export function FormLayout<T extends FieldValues>({
 }: FormLayoutProps<T>) {
   const {
     clearErrors,
-    formState: { disabled, isSubmitting },
+    setError,
+    formState: { errors, disabled, isSubmitting, isDirty },
   } = form;
   const handleSubmit = async (data: T) => {
     try {
       clearErrors();
       return await onSubmit(data);
     } catch (error) {
-      form.setError("root", { message: getUserErrorMessage(error) });
+      setError("root", { message: normalizeError(error).message });
     }
   };
   return (
-    <BeforeUnload
-      disabled={!form.formState.isDirty || !enableBeforeUnloadProtection}
-    >
+    <BeforeUnload disabled={!isDirty || !enableBeforeUnloadProtection}>
       <FormProvider {...form}>
         <form
           id={id}
           onSubmit={form.handleSubmit(handleSubmit)}
-          className={cn("flex w-full flex-1 flex-col", className)}
+          className={className}
           aria-describedby={description}
         >
-          <FieldGroup className="h-full w-full flex-1 justify-evenly">
+          <FieldGroup>
             <FieldContent className="space-y-3">
               {title && (
                 <FieldTitle
@@ -160,9 +157,9 @@ export function FormLayout<T extends FieldValues>({
 
             {/* General Error */}
 
-            {form.formState.errors.root && (
+            {errors.root && (
               <FieldError className="text-destructive">
-                {form.formState.errors.root.message}
+                {errors.root.message}
               </FieldError>
             )}
 

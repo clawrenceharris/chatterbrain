@@ -29,6 +29,7 @@ export enum AppErrorCode {
   AUTH_SESSION_EXPIRED = "auth_session_expired",
   AUTH_RATE_LIMITED = "auth_rate_limited",
   AUTH_UNAUTHENTICATED = "auth_unauthenticated",
+  AUTH_PASSWORD_ALREADY_USED = "auth_password_already_used",
 
   // Authorization Errors
   PERMISSION_DENIED = "permission_denied",
