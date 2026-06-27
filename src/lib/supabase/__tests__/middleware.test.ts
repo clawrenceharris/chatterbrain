@@ -55,7 +55,7 @@ describe("updateSession", () => {
     const response = await updateSession(makeRequest("/auth/login?next=/"));
 
     expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe("http://localhost/dashboard");
+    expect(response.headers.get("location")).toBe("http://localhost/home");
   });
 
   it("allows authenticated users on protected routes", async () => {

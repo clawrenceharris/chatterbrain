@@ -1,6 +1,6 @@
 export type CreateProfileInput = {
   userId: string;
-  firstName: string;
-  lastName: string | null;
+  displayName: string | null;
+  username: string;
   avatarFile?: File | null;
 };

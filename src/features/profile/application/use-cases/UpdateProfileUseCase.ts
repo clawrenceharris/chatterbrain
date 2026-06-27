@@ -1,5 +1,5 @@
 import { ProfileRepository } from "../../domain/repositories";
-import { AvatarStorage } from "../../domain/services";
+import { UserAvatarStorage } from "../../domain/services";
 import { UpdateProfileInput } from "../dto";
 import { fail, ok, Result } from "@/shared/application";
 import { UpdateProfileResult } from "../dto";
@@ -10,7 +10,7 @@ import { UpdateProfileCommand } from "../../domain/types";
 export class UpdateProfileUseCase {
   constructor(
     private readonly profileRepository: ProfileRepository,
-    private readonly storage: AvatarStorage,
+    private readonly storage: UserAvatarStorage,
   ) {}
 
   async execute(
@@ -28,10 +28,10 @@ export class UpdateProfileUseCase {
       }
 
       const command: UpdateProfileCommand = {
-        ...(input.firstName !== undefined && { firstName: input.firstName }),
-        ...(input.lastName !== undefined && {
-          lastName: input.lastName ?? null,
+        ...(input.displayName !== undefined && {
+          displayName: input.displayName,
         }),
+        ...(input.username !== undefined && { username: input.username }),
         ...(uploadedAvatar !== undefined && {
           avatarUrl: uploadedAvatar?.url ?? null,
         }),

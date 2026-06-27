@@ -142,12 +142,11 @@ actions/
 
 ## 8. Routing map
 
-| UI                      | Route                                       |
-| ----------------------- | ------------------------------------------- |
-| Practice home           | `/practice`                                 |
-| Browse scenarios        | `/practice/scenarios`                       |
-| Scenario detail / start | `/practice/scenarios/[id]`                  |
-| Explore domains         | `/practice/domains`                         |
-| Domain detail           | `/practice/domains/[slug]`                  |
-| Active encounter        | `/practice/encounters/[encounterId]`        |
-| Encounter review        | `/practice/encounters/[encounterId]/review` |
+| UI                      | Route                              |
+| ----------------------- | ---------------------------------- |
+| Browse scenarios        | `/scenarios`                       |
+| Scenario detail / start | `/scenarios/[id]/[slug]`           |
+| Explore domains         | `/domains`                         |
+| Domain detail           | `/domains/[slug]`                  |
+| Active encounter        | `/encounters/[encounterId]`        |
+| Encounter review        | `/encounters/[encounterId]/review` |

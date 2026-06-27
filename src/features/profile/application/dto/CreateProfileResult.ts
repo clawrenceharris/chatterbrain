@@ -1,6 +1,6 @@
 export type CreateProfileResult = {
   userId: string;
-  firstName: string | null;
-  lastName: string | null;
+  displayName: string | null;
+  username: string;
   avatarUrl: string | null;
 };

@@ -1,7 +1,7 @@
 export type ProfileDetailResult = {
   userId: string;
-  firstName: string;
-  lastName: string | null;
+  displayName: string | null;
+  username: string;
   avatarUrl: string | null;
   birthday: string | null;
   gender: string | null;

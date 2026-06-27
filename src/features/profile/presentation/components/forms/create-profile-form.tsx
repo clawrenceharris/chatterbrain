@@ -37,21 +37,21 @@ export function CreateProfileForm({
         name="avatarFile"
       />
       <FieldGroup>
-        <InputField<CreateProfileFormValues, "firstName">
-          placeholder="Enter your first name"
-          name="firstName"
-          required
-          inputId="create-profile-form-first-name"
-          label="What's your first name?"
+        <InputField<CreateProfileFormValues, "displayName">
+          placeholder="What should we call you?"
+          name="displayName"
+          required={false}
+          inputId="create-profile-form-display-name"
+          label="Display name"
           autoComplete="given-name"
         />
-        <InputField<CreateProfileFormValues, "lastName">
-          placeholder="Enter your last name"
-          name="lastName"
-          autoComplete="last-name"
-          required={false}
-          inputId="create-profile-form-last-name"
-          label="Last name"
+        <InputField<CreateProfileFormValues, "username">
+          placeholder="Choose a username"
+          name="username"
+          autoComplete="username"
+          required
+          inputId="create-profile-form-username"
+          label="Username"
         />
       </FieldGroup>
     </FormLayout>

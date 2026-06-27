@@ -5,3 +5,5 @@ export * from "./content-layout";
 export * from "./content-header";
 export * from "./user-nav";
 export * from "./sidebar-toggle";
+export * from "./theme-toggle";
+export * from "./sidebar-layout";

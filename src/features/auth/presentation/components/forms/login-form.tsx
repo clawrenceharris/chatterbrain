@@ -25,7 +25,8 @@ export function LoginForm() {
       showsCancelButton={false}
       submitText="Log In"
       onSubmit={login}
-      title="Welcome Back!"
+      titleClassName="text-3xl tracking-wide font-primary-heading"
+      title="Welcome back!"
       description="Sign back in to your account to continue chattering."
     >
       <FieldGroup>

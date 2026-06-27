@@ -10,19 +10,30 @@ export class ProfileReadService {
     userId: string,
   ): Promise<Result<ProfileCardResult | null>> {
     try {
-      const profile = await this.profileReadRepository.findProfileCard(userId);
+      const profile =
+        await this.profileReadRepository.findProfileCardById(userId);
       return ok(profile);
     } catch (error) {
       return fail(normalizeError(error));
     }
   }
-
-  async getProfileDetail(
+  async getProfileDetailByUsername(
+    username: string,
+  ): Promise<Result<ProfileDetailResult | null>> {
+    try {
+      const profile =
+        await this.profileReadRepository.findProfileDetailByUsername(username);
+      return ok(profile);
+    } catch (error) {
+      return fail(normalizeError(error));
+    }
+  }
+  async getProfileDetailById(
     userId: string,
   ): Promise<Result<ProfileDetailResult | null, ApplicationError>> {
     try {
       const profile =
-        await this.profileReadRepository.findProfileDetail(userId);
+        await this.profileReadRepository.findProfileDetailById(userId);
       return ok(profile);
     } catch (error) {
       return fail(normalizeError(error));

@@ -14,8 +14,8 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "bg-background fixed top-0 left-0 z-0 flex h-screen -translate-x-full flex-col justify-center py-3.5 transition-[width] duration-300 ease-in-out md:translate-x-0",
-        !getOpenState() ? "w-[95px]" : "w-[193px]",
+        "bg-background fixed top-0 left-0 z-50 flex h-screen -translate-x-full flex-col justify-center py-4 transition-[width] duration-300 ease-in-out md:translate-x-0",
+        !getOpenState() ? "w-[95px]" : "w-48",
         settings.disabled && "hidden",
       )}
     >
@@ -34,7 +34,7 @@ export function Sidebar() {
             variant="link"
             asChild
           >
-            <Link href="/dashboard" className="relative">
+            <Link href="/home" className="relative">
               <Image
                 src={"/logo.png"}
                 className="size-7"

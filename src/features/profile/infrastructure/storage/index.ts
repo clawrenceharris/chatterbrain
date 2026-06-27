@@ -1,1 +1,1 @@
-export * from "./SupabaseAvatarStorage";
+export * from "./SupabaseUserAvatarStorage";

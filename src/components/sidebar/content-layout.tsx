@@ -16,6 +16,7 @@ type ContentLayoutProps = {
   showThemeToggle?: boolean;
   headerRight?: React.ReactNode;
   headerClassName?: string;
+  showSearch?: boolean;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, "title">;
 
 export const ContentLayout = React.forwardRef<
@@ -27,6 +28,7 @@ export const ContentLayout = React.forwardRef<
       title,
       children,
       onBack,
+      showSearch = true,
       canGoBack = false,
       className,
       showHeader = true,
@@ -34,15 +36,20 @@ export const ContentLayout = React.forwardRef<
       scrollable = true,
       headerRight,
       headerClassName,
+      scrollAreaClassName,
       showThemeToggle = true,
       ...props
     }: ContentLayoutProps,
     ref,
   ) => {
     return (
-      <div className="flex h-full flex-1 flex-col" {...props}>
+      <div
+        className={cn("flex h-full flex-1 flex-col px-1", className)}
+        {...props}
+      >
         {showHeader && (
           <ContentHeader
+            showSearch={showSearch}
             title={title}
             canGoBack={canGoBack}
             onBack={onBack}
@@ -55,8 +62,8 @@ export const ContentLayout = React.forwardRef<
         <div
           ref={ref}
           className={cn(
-            "border-border/70 relative flex h-full flex-1 flex-col overflow-hidden rounded-tl-2xl border-t-2 border-l-2 px-6 py-4 pb-22 shadow-sm",
-            className,
+            "border-border/70 relative flex h-full flex-1 flex-col overflow-hidden rounded-tl-2xl border-t-2 border-l-2 px-6 py-4 pb-22 shadow-xs",
+            scrollAreaClassName,
             scrollable && "overflow-y-auto overscroll-y-contain",
           )}
         >

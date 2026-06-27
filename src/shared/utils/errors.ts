@@ -99,10 +99,7 @@ export const errorMessages: Record<AppErrorCode, string> = {
 
 export function getUserErrorMessage(error: unknown): string {
   const normalizedError = normalizeError(error);
-  if (normalizedError instanceof ApplicationError) {
-    return normalizedError.message;
-  }
-  return errorMessages[AppErrorCode.UNKNOWN_ERROR];
+  return normalizedError.message;
 }
 
 function isPrismaKnownRequestError(

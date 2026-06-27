@@ -1,4 +1,4 @@
-import { LucideIcon, Brain, Home, Dumbbell, TrendingUp } from "lucide-react";
+import { LucideIcon, Brain, Home, TrendingUp, BookOpen } from "lucide-react";
 
 type Submenu = {
   href: string;
@@ -19,35 +19,36 @@ type Group = {
   menus: Menu[];
 };
 
-export function getMenuList(pathname: string): Group[] {
+export function getMenuList(pathname: string, username: string): Group[] {
   return [
     {
       groupLabel: "",
       menus: [
         {
-          href: "/dashboard",
-          label: "Dashboard",
+          href: "/home",
+          label: "Home",
           icon: Home,
           submenus: [],
-          active: pathname === "/dashboard",
+          active: pathname === "/home",
         },
         {
-          href: "/practice",
-          label: "Practice",
-          icon: Dumbbell,
-          active: pathname === "/practice" || pathname === "practice/scenarios",
-        },
-        {
-          href: "/helpers",
-          label: "Helpers",
+          href: "/scenarios",
+          label: "Scenarios",
           icon: Brain,
-          active: pathname.startsWith("/helpers"),
+          active: pathname.startsWith("/scenarios"),
         },
         {
-          href: "/me/progress",
+          href: `/user/${username}/scenarios`,
+          label: "Library",
+          icon: BookOpen,
+          active: pathname === `/user/${username}/scenarios`,
+        },
+
+        {
+          href: `/user/${username}/progress`,
           label: "Progress",
           icon: TrendingUp,
-          active: pathname.startsWith("/me/progress"),
+          active: pathname === `/user/${username}/progress`,
         },
       ],
     },

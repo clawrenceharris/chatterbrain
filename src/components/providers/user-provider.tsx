@@ -23,8 +23,9 @@ type UserProviderProps = {
 export function UserProvider({ children }: UserProviderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthReady } = useAuth();
+  const { user, isAuthReady, isLoading } = useAuth();
   const isOnboardingRoute = pathname.startsWith("/onboarding");
+  const isAuthRoute = pathname.startsWith("/auth");
   const {
     data: profile,
     refetch,
@@ -43,16 +44,19 @@ export function UserProvider({ children }: UserProviderProps) {
     }
 
     if (!needsOnboarding && isOnboardingRoute) {
-      router.replace("/dashboard");
+      router.replace("/home");
     }
   }, [profile, isLoadingProfile, needsOnboarding, isOnboardingRoute, router]);
 
-  if (!isAuthReady) {
-    return <LoadingState />;
+  if (!isAuthReady || isLoading) {
+    return <LoadingState variant="page" />;
   }
 
-  if ((!user && pathname.includes("auth")) || pathname === "/") {
+  if ((!user && isAuthRoute) || pathname === "/") {
     return <>{children}</>;
+  }
+  if ((!user && !isAuthRoute) || (user && isAuthRoute)) {
+    return <LoadingState variant="page" />;
   }
 
   if (!user) {
@@ -69,11 +73,7 @@ export function UserProvider({ children }: UserProviderProps) {
   }
 
   if (isLoadingProfile) {
-    return (
-      <div className="centered">
-        <LoadingState />
-      </div>
-    );
+    return <LoadingState variant="page" />;
   }
   if (error) {
     return (

@@ -81,7 +81,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
         throw result.error;
       }
       setUser(result.data);
-      router.push("/dashboard");
+      router.push("/home");
       router.refresh();
       setIsLoading(false);
     },
@@ -103,7 +103,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       }
       setUser(result.data);
       setIsLoading(false);
-      router.push("/dashboard");
+      router.push("/home");
       router.refresh();
     },
     [router],
@@ -116,13 +116,13 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     setIsLoading(true);
     const result = await signOutAction();
     if (!result.success) {
+      setIsLoading(false);
       toast.error(result.error.message);
     }
-
-    setUser(null);
-    setIsLoading(false);
     router.push("/auth/login");
     router.refresh();
+    setUser(null);
+    setIsLoading(false);
   }, [router]);
 
   const value = {

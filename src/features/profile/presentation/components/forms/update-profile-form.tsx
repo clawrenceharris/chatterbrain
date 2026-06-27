@@ -10,17 +10,19 @@ export function UpdateProfileForm(
   return (
     <FormLayout<UpdateProfileFormValues> showsCancelButton={false} {...props}>
       <FieldGroup>
-        <InputField<UpdateProfileFormValues, "firstName">
-          placeholder="First name"
-          name="firstName"
+        <InputField<UpdateProfileFormValues, "displayName">
+          placeholder="What should we call you?"
+          name="displayName"
+          autoComplete="display-name"
           required={false}
-          label="First name"
+          label="Display name"
         />
-        <InputField<UpdateProfileFormValues, "lastName">
+        <InputField<UpdateProfileFormValues, "username">
           placeholder="Last name"
-          name="lastName"
+          name="username"
+          autoComplete="username"
           required
-          label="Last name"
+          label="Username"
         />
       </FieldGroup>
     </FormLayout>

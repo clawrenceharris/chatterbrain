@@ -15,18 +15,20 @@ type ProfileCardProps = {
 } & React.ComponentProps<typeof Card>;
 export function ProfileCard({ profile, encounterCount = 0 }: ProfileCardProps) {
   return (
-    <Card className="bg-transparent shadow-none">
+    <Card className="w-full min-w-[330px] bg-transparent shadow-none">
       <CardHeader>
         <Avatar className="size-17">
           <AvatarImage src={profile.avatarUrl ?? undefined} />
           <AvatarFallback>
-            {profile.firstName.charAt(0).toUpperCase()}
-            {profile.lastName?.charAt(0).toUpperCase()}
+            {profile.displayName?.charAt(0).toUpperCase() ??
+              profile.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </CardHeader>
       <CardContent className="space-y-5">
-        <p className="font-heading text-lg font-medium">{profile.firstName}</p>
+        <p className="font-heading text-lg font-medium">
+          {profile.displayName ?? profile.username}
+        </p>
 
         <span className="bg-primary/10 text-primary inline-flex items-center gap-2 rounded-[999] px-5 py-1 text-sm">
           <MessageCircle strokeWidth={2.5} className="size-4" />

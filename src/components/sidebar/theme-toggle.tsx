@@ -1,3 +1,4 @@
+import { useTheme } from "../providers";
 import {
   Button,
   DropdownMenu,
@@ -10,15 +11,17 @@ import {
   TooltipTrigger,
 } from "../ui";
 import { AudioWaveform, Brain, CloudLightning, Sun, Waves } from "lucide-react";
-import { useTheme } from "@/store";
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  className?: string;
+};
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
   return (
     <TooltipProvider>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div>
+          <div className={className}>
             <div>
               <Tooltip>
                 <TooltipTrigger asChild>

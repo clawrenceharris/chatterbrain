@@ -1,23 +1,19 @@
 interface UserProfileProps {
   userId: string;
-  firstName: string | null;
-  lastName: string | null;
+  displayName: string | null;
+  username: string;
   avatarUrl: string | null;
 }
 
 export class UserProfile {
   constructor(private readonly props: UserProfileProps) {}
 
-  get firstName() {
-    return this.props.firstName;
+  get username() {
+    return this.props.username;
   }
 
-  get fullName() {
-    return `${this.props.firstName} ${this.props.lastName}`;
-  }
-
-  get lastName() {
-    return this.props.lastName;
+  get displayName() {
+    return this.props.displayName;
   }
 
   get avatarUrl() {

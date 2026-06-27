@@ -26,7 +26,7 @@ export function OnboardingFlow({ userId }: OnboardingFlowProps) {
   const { completeOnboarding, isLoading } = useCompleteOnboarding({
     userId,
     onSuccess: () => {
-      router.push("/dashboard");
+      router.push("/home");
       router.refresh();
     },
     onError: (message) => {

@@ -10,8 +10,8 @@ datasource db {
 model UserProfile {
   id            String         @id @default(uuid())
   userId        String         @unique
-  firstName     String
-  lastName      String?
+  displayName   String?
+  username      String         @unique
   avatarUrl     String?
   birthday      String?
   gender        String?
@@ -64,6 +64,8 @@ model Encounter {
   // Example: { "roommateName": "Jordan", "noiseType": "gaming after midnight" }
   variableValues Json?
 
+  conversationPhase String?
+
   startedAt   DateTime  @default(now())
   completedAt DateTime?
   abandonedAt DateTime?
@@ -97,6 +99,7 @@ model ConversationTurn {
   speakerId   String?
   speakerName String?
   content     String
+  phase       String?
 
   createdAt DateTime @default(now())
 
