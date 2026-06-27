@@ -15,9 +15,11 @@ import {
   CardAction,
 } from "@/components/ui";
 import { EncounterStatus } from "@/features/encounter/domain/value-objects";
+import { useModals } from "@/hooks/use-modals";
 import { cn } from "@/lib/utils";
 import { getShortDate } from "@/shared/utils";
-import { Eye, MoreVertical, RotateCcw, Trash2 } from "lucide-react";
+import { Eye, Loader2, MoreVertical, RotateCcw, Trash2 } from "lucide-react";
+import { useDeleteEncounter } from "../../hooks";
 
 type EncounterCardProps = {
   encounter: {
@@ -52,6 +54,20 @@ export function EncounterCard({
   onAbandon,
   className,
 }: EncounterCardProps) {
+  const {
+    modals: { confirmation },
+  } = useModals();
+  const { mutate: deleteEncounter, isPending: isDeleting } =
+    useDeleteEncounter();
+  function handleAbandon() {
+    confirmation.open({
+      title: "Abandon Encounter",
+      description: "Are you sure you want to abandon this encounter?",
+      onConfirm: () => {
+        deleteEncounter(encounter.id);
+      },
+    });
+  }
   return (
     <Card
       className={cn(
@@ -87,7 +103,11 @@ export function EncounterCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="flex-0.5">
-                <MoreVertical />
+                {isDeleting ? (
+                  <Loader2 strokeWidth={2.5} className="size-4 animate-spin" />
+                ) : (
+                  <MoreVertical />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -101,8 +121,13 @@ export function EncounterCard({
               <DropdownMenuItem onClick={onReview}>
                 <Eye /> Review Encounter
               </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive" onClick={onAbandon}>
-                <Trash2 /> Abandon
+              <DropdownMenuItem variant="destructive" onClick={handleAbandon}>
+                {isDeleting ? (
+                  <Loader2 strokeWidth={2.5} className="size-4 animate-spin" />
+                ) : (
+                  <Trash2 />
+                )}{" "}
+                Abandon
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

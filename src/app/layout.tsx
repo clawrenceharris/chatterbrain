@@ -60,13 +60,11 @@ export default async function RootLayout({
       >
         <QueryProvider dehydratedState={dehydratedState}>
           <AuthProvider initialUser={initialUser}>
-            <UserProvider>
-              <ThemeProvider>
-                <ChitterChatProvider>
-                  <ModalProvider>{children}</ModalProvider>
-                </ChitterChatProvider>
-              </ThemeProvider>
-            </UserProvider>
+            <ThemeProvider>
+              <ChitterChatProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </ChitterChatProvider>
+            </ThemeProvider>
           </AuthProvider>
         </QueryProvider>
 

@@ -83,7 +83,6 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       setUser(result.data);
       router.push("/home");
       router.refresh();
-      setIsLoading(false);
     },
     [router],
   );
@@ -102,7 +101,6 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
         throw result.error;
       }
       setUser(result.data);
-      setIsLoading(false);
       router.push("/home");
       router.refresh();
     },
@@ -122,7 +120,6 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     router.push("/auth/login");
     router.refresh();
     setUser(null);
-    setIsLoading(false);
   }, [router]);
 
   const value = {

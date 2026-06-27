@@ -48,14 +48,11 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }, [profile, isLoadingProfile, needsOnboarding, isOnboardingRoute, router]);
 
-  if (!isAuthReady || isLoading) {
+  if (!isAuthReady) {
     return <LoadingState variant="page" />;
   }
 
-  if ((!user && isAuthRoute) || pathname === "/") {
-    return <>{children}</>;
-  }
-  if ((!user && !isAuthRoute) || (user && isAuthRoute)) {
+  if (!user && !isAuthRoute) {
     return <LoadingState variant="page" />;
   }
 
