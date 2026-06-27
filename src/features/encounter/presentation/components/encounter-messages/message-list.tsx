@@ -84,7 +84,7 @@ export const EncounterMessageList = forwardRef<
                     "text-foreground rounded-bl-[7px] bg-linear-to-br shadow-md",
                   )}
                 >
-                  <div className="flex items-center justify-center gap-2 rounded-full bg-gray-100 px-4 py-3">
+                  <div className="100 flex items-center justify-center gap-2 rounded-full px-4 py-3">
                     <div
                       className="animate-typing-dots h-2 w-2 rounded-[999px] bg-gray-400"
                       style={{ animationDelay: "-0.32s" }}

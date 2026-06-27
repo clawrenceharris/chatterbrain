@@ -8,6 +8,7 @@ import type { ConversationPhase } from "../value-objects/ConversationPhase";
 import type { SocialSkill } from "@/types";
 import { UpdateEncounterValuesInput } from "../../application/dto/UpdateEncounterValuesInput";
 import type { DeleteEncounterByIdInput } from "../../application/dto/DeleteEncounterByIdInput";
+import type { ReplayEncounterInput } from "../../application/dto/ReplayEncounterInput";
 
 export type EncounterReviewItemDraft = {
   evidenceTurnId: string;
@@ -44,6 +45,7 @@ export interface EncounterRepository {
   deleteById(input: DeleteEncounterByIdInput): Promise<DeleteEncounterResult>;
   create(encounter: Encounter): Promise<EncounterCardResult>;
   saveProgress(input: SaveEncounterProgressInput): Promise<EncounterCardResult>;
+  replay(input: ReplayEncounterInput): Promise<EncounterCardResult>;
   completeWithReview(input: {
     encounter: Encounter;
     review: EncounterReviewDraft;

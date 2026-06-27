@@ -16,9 +16,8 @@ import { useModals } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { EncounterPageSkeleton } from "../components";
 import { EmptyState, ErrorState } from "@/components/states";
-import { useEncounterPage } from "../hooks";
+import { useEncounterPage, useReplayEncounter } from "../hooks";
 import { EncounterPageOutput } from "../../application/dto";
-import { startEncounter } from "@/actions/encounter";
 import { useQueryClient } from "@tanstack/react-query";
 import { scenarioKeys } from "@/lib/queries";
 
@@ -45,6 +44,7 @@ type EncounterContextType = {
   // Encounter State
   key: number;
   isLoading: boolean;
+  isReplaying: boolean;
 };
 type EncounterProviderProps = {
   children: React.ReactNode;
@@ -62,6 +62,12 @@ export function EncounterProvider({
   const [isListening, setIsListening] = useState<boolean>(false);
   const [isProcessingSpeech, setIsProcessingSpeech] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const recordingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const listeningSessionRef = useRef(0);
   const [key, setKey] = useState<number>(0);
   const { getAudioUrl } = useVoiceStore();
   const queryClient = useQueryClient();
@@ -77,6 +83,8 @@ export function EncounterProvider({
     error,
     refetch,
   } = useEncounterPage(encounterId, user.id);
+  const { mutateAsync: replayEncounterMutation, isPending: isReplaying } =
+    useReplayEncounter();
 
   const {
     modals: {},
@@ -142,74 +150,134 @@ export function EncounterProvider({
     };
   }, []);
 
+  const clearRecordingTimeout = useCallback(() => {
+    if (!recordingTimeoutRef.current) return;
+    clearTimeout(recordingTimeoutRef.current);
+    recordingTimeoutRef.current = null;
+  }, []);
+
+  const releaseMediaStream = useCallback((stream?: MediaStream | null) => {
+    const activeStream = stream ?? mediaStreamRef.current;
+    activeStream?.getTracks().forEach((track) => track.stop());
+    if (!stream || stream === mediaStreamRef.current) {
+      mediaStreamRef.current = null;
+    }
+  }, []);
+
+  const finishListening = useCallback(
+    (stream?: MediaStream | null) => {
+      clearRecordingTimeout();
+      releaseMediaStream(stream);
+      mediaRecorderRef.current = null;
+      setIsListening(false);
+    },
+    [clearRecordingTimeout, releaseMediaStream],
+  );
+
+  const stopListening = useCallback(() => {
+    const recorder = mediaRecorderRef.current;
+
+    setIsListening(false);
+    clearRecordingTimeout();
+
+    if (recorder && recorder.state !== "inactive") {
+      setIsProcessingSpeech(true);
+      recorder.stop();
+      return;
+    }
+
+    listeningSessionRef.current += 1;
+    finishListening();
+    setIsProcessingSpeech(false);
+  }, [clearRecordingTimeout, finishListening]);
+
+  useEffect(() => {
+    return () => {
+      listeningSessionRef.current += 1;
+      clearRecordingTimeout();
+      const recorder = mediaRecorderRef.current;
+      if (recorder && recorder.state !== "inactive") {
+        recorder.stop();
+      }
+      releaseMediaStream();
+      mediaRecorderRef.current = null;
+    };
+  }, [clearRecordingTimeout, releaseMediaStream]);
+
   // Speech to text functionality
   const toggleListening = useCallback(
     async (onUserInput: (input: string) => void) => {
       if (isListening) {
-        setIsListening(false);
-      } else {
-        try {
-          setIsListening(true);
-          setIsProcessingSpeech(true);
+        stopListening();
+        return;
+      }
 
-          // Request microphone permission
-          const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
+      const sessionId = ++listeningSessionRef.current;
 
-          // Create a MediaRecorder instance
-          const mediaRecorder = new MediaRecorder(stream);
-          const audioChunks: BlobPart[] = [];
+      try {
+        setIsListening(true);
+        setIsProcessingSpeech(true);
 
-          mediaRecorder.addEventListener("dataavailable", (event) => {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+        if (sessionId !== listeningSessionRef.current) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+
+        mediaStreamRef.current = stream;
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        const audioChunks: BlobPart[] = [];
+
+        mediaRecorder.addEventListener("dataavailable", (event) => {
+          if (event.data.size > 0) {
             audioChunks.push(event.data);
-          });
+          }
+        });
 
-          mediaRecorder.addEventListener("stop", async () => {
-            try {
-              // Create audio blob from recorded chunks
-              const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        mediaRecorder.addEventListener("stop", async () => {
+          try {
+            const audioBlob = new Blob(audioChunks, {
+              type: mediaRecorder.mimeType || "audio/webm",
+            });
 
-              // Convert speech to text using ElevenLabs
-              const formData = new FormData();
-              formData.append("audio", audioBlob);
-
-              // Use ElevenLabs speech-to-text API
+            if (audioBlob.size > 0) {
               const response = await getSpeechToTextAction(audioBlob);
               if (response.success) {
                 onUserInput(response.data);
               } else {
                 toast.error(response.error.message);
               }
-
-              // Stop all tracks in the stream
-              stream.getTracks().forEach((track) => track.stop());
-            } catch (error) {
-              console.error("Speech to text error:", error);
-              toast.error(
-                "Could not convert speech to text. Please try again or type your response.",
-              );
-            } finally {
-              setIsListening(false);
-              setIsProcessingSpeech(false);
             }
-          });
-          // Start recording
-          mediaRecorder.start();
-          setTimeout(() => {
-            mediaRecorder.stop();
-          }, 15000);
-        } catch (error) {
-          console.error("Microphone access error:", error);
-          toast.error(
-            "Could not access microphone. Please check your browser permissions.",
-          );
-          setIsListening(false);
-          setIsProcessingSpeech(false);
-        }
+          } catch (error) {
+            console.error("Speech to text error:", error);
+            toast.error(
+              "Could not convert speech to text. Please try again or type your response.",
+            );
+          } finally {
+            finishListening(stream);
+            setIsProcessingSpeech(false);
+          }
+        });
+
+        mediaRecorder.start();
+        recordingTimeoutRef.current = setTimeout(() => {
+          stopListening();
+        }, 15000);
+      } catch (error) {
+        console.error("Microphone access error:", error);
+        toast.error(
+          "Could not access microphone. Please check your browser permissions.",
+        );
+        listeningSessionRef.current += 1;
+        finishListening();
+        setIsProcessingSpeech(false);
       }
     },
-    [isListening],
+    [finishListening, isListening, stopListening],
   );
   const handleExit = useCallback(() => {
     if (!encounter) return;
@@ -233,17 +301,19 @@ export function EncounterProvider({
       toast.error("Encounter not found");
       return;
     }
-    const result = await startEncounter({
-      scenarioId: encounter.scenario.id,
-      actorId: encounter.actor.id,
-    });
-    if (!result.success) {
-      toast.error(result.error.message);
-      return;
+
+    try {
+      await replayEncounterMutation(encounter.id);
+      await refetch();
+      setKey((prev) => prev + 1);
+    } catch (replayError) {
+      const message =
+        replayError instanceof Error
+          ? replayError.message
+          : "Could not replay encounter";
+      toast.error(message);
     }
-    router.push(`/encounters/${result.data.id}`);
-    setKey((prev) => prev + 1);
-  }, [encounter, router]);
+  }, [encounter, refetch, replayEncounterMutation]);
   const toggleAudio = useCallback(() => {
     setIsVolumeOn((prev) => !prev);
   }, []);
@@ -272,6 +342,7 @@ export function EncounterProvider({
       toggleListening,
       handleReplay,
       key,
+      isReplaying,
     }),
     [
       isVolumeOn,
@@ -287,6 +358,7 @@ export function EncounterProvider({
       handleReplay,
       key,
       isEncounterLoading,
+      isReplaying,
     ],
   );
 

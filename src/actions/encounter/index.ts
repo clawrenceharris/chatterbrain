@@ -8,4 +8,5 @@ export * from "./saveEncounterProgress";
 export * from "./askEncounterReviewQuestion";
 export * from "./updateEncounterValues";
 export * from "./deleteEncounterById";
+export * from "./replayEncounter";
 export * from "./invokeEncounterHelper";

@@ -50,6 +50,7 @@ export function EncounterEngine({ encounter }: EncounterEngineProps) {
     toggleAudio,
     handleExit,
     isVolumeOn,
+    isReplaying,
   } = useEncounterContext();
   const { profile } = useUser();
   const { actor, scenario } = encounter;
@@ -102,6 +103,7 @@ export function EncounterEngine({ encounter }: EncounterEngineProps) {
         onToggleAudio={toggleAudio}
         onToggleListening={toggleListening}
         onViewResults={handleViewResults}
+        isReplaying={isReplaying}
         setInput={setInput}
         spokenActorMessageId={spokenActorMessageId}
         startDialogue={startDialogue}
@@ -133,6 +135,7 @@ type EncounterEngineViewProps = {
   onToggleAudio: () => void;
   onToggleListening: (onUserInput: (input: string) => void) => void;
   onViewResults: () => void;
+  isReplaying: boolean;
   playAudio: (text: string) => void;
   setInput: (value: string) => void;
   spokenActorMessageId?: string;
@@ -158,6 +161,7 @@ function EncounterEngineView({
   onToggleAudio,
   onToggleListening,
   onViewResults,
+  isReplaying,
   playAudio,
   setInput,
   spokenActorMessageId,
@@ -318,8 +322,10 @@ function EncounterEngineView({
                   className="shadow-lg"
                   size="icon"
                   onClick={onReplay}
+                  disabled={isReplaying}
+                  aria-label="Replay encounter"
                 >
-                  <RotateCcw />
+                  <RotateCcw className={isReplaying ? "animate-spin" : ""} />
                 </Button>
               </CardAction>
               <CardAction className="flex-1">

@@ -7,11 +7,15 @@ import { useHomePage } from "@/features/home/presentation/hooks";
 import { ScenarioCard } from "@/features/scenario/presentation/components/ui";
 import { useRouter } from "next/navigation";
 import { HomePageSkeleton } from "./_components/home-page-skeleton";
+import { DomainCard } from "@/features/domain/presentation/components/ui/domain-card";
+import { useDomains } from "@/features/domain/presentation/hooks";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function HomePage() {
   const router = useRouter();
   const { data, error, isLoading } = useHomePage();
-
+  const { data: domains = [] } = useDomains();
   if (isLoading) {
     return (
       <ContentLayout contentContainerClassName="space-y-8" title="Home">
@@ -72,7 +76,21 @@ export default function HomePage() {
           />
         )}
       </section>
-
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-muted-foreground text-lg font-medium">
+            Browse social domains
+          </h2>
+          <Button variant="link" size="sm" asChild>
+            <Link href="/domains">View all</Link>
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {domains.slice(0, 6).map((domain, index) => (
+            <DomainCard key={domain.id} domain={domain} index={index} />
+          ))}
+        </div>
+      </section>
       <section className="flex flex-col gap-4">
         <h2 className="text-muted-foreground text-lg font-medium">
           {data.tryNext.title}

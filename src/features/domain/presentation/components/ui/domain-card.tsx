@@ -14,9 +14,28 @@ import Link from "next/link";
 
 type DomainCardProps = {
   domain: DomainCardResult;
-  className: string;
+  index: number;
+  className?: string;
 };
-export function DomainCard({ domain, className }: DomainCardProps) {
+
+const CLASS_NAMES = [
+  "bg-[#e7f7ff]",
+  "bg-[#f0e7ff]",
+  "bg-[#ddfbf3]",
+  "bg-[#fff3d9]",
+  "bg-[#e8f0ff]",
+  "bg-[#f6e7ff]",
+  "bg-[#e7f7ff]",
+  "bg-[#f0e7ff]",
+  "bg-[#ddfbf3]",
+  "bg-[#fff3d9]",
+  "bg-[#e8f0ff]",
+  "bg-[#f6e7ff]",
+  "bg-[#e7f7ff]",
+  "bg-[#f0e7ff]",
+  "bg-[#ddfbf3]",
+];
+export function DomainCard({ domain, index = 0, className }: DomainCardProps) {
   if (!domain) return null;
   return (
     <Link
@@ -26,6 +45,7 @@ export function DomainCard({ domain, className }: DomainCardProps) {
       <Item
         className={cn(
           "group relative cursor-pointer gap-3 overflow-hidden shadow-sm transition-all duration-200 hover:-translate-y-0.5",
+          CLASS_NAMES[index % CLASS_NAMES.length],
           className,
         )}
       >

@@ -9,4 +9,5 @@ export * from "./SaveEncounterProgressInput";
 export * from "./UpdateEncounterValuesInput";
 export * from "./DeleteEncounterByIdInput";
 export * from "./DeleteEncounterResult";
+export * from "./ReplayEncounterInput";
 export * from "./InvokeEncounterHelperDto";

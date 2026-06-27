@@ -19,6 +19,7 @@ import type {
 import type { ConversationTurn } from "../../domain/value-objects";
 import { UpdateEncounterValuesInput } from "../../application/dto/UpdateEncounterValuesInput";
 import type { DeleteEncounterByIdInput } from "../../application/dto/DeleteEncounterByIdInput";
+import type { ReplayEncounterInput } from "../../application/dto/ReplayEncounterInput";
 
 export class PrismaEncounterRepository implements EncounterRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -74,6 +75,46 @@ export class PrismaEncounterRepository implements EncounterRepository {
         ...encounterCardArgs,
         data: {
           conversationPhase: input.conversationPhase,
+        },
+      });
+    });
+
+    return PrismaEncounterMapper.toCard(record);
+  }
+
+  async replay(input: ReplayEncounterInput): Promise<EncounterCardResult> {
+    const record = await this.prisma.$transaction(async (tx) => {
+      const encounter = await tx.encounter.findFirst({
+        where: {
+          id: input.encounterId,
+          userId: input.userId,
+        },
+        select: { id: true },
+      });
+
+      if (!encounter) {
+        throw new Error("Encounter not found");
+      }
+
+      await tx.encounterReview.deleteMany({
+        where: { encounterId: input.encounterId },
+      });
+      await tx.helperUse.deleteMany({
+        where: { encounterId: input.encounterId },
+      });
+      await tx.conversationTurn.deleteMany({
+        where: { encounterId: input.encounterId },
+      });
+
+      return tx.encounter.update({
+        where: { id: input.encounterId },
+        ...encounterCardArgs,
+        data: {
+          status: "IN_PROGRESS",
+          conversationPhase: null,
+          completedAt: null,
+          abandonedAt: null,
+          startedAt: new Date(),
         },
       });
     });

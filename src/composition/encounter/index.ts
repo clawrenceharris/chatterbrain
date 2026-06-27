@@ -7,4 +7,5 @@ export * from "./makeSaveEncounterProgressUseCase";
 export * from "./makeAskEncounterReviewQuestionUseCase";
 export * from "./makeUpdateEncounterValuesUseCase";
 export * from "./makeDeleteEncounterByIdUseCase";
+export * from "./makeReplayEncounterUseCase";
 export * from "./makeInvokeEncounterHelperUseCase";

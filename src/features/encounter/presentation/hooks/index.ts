@@ -8,3 +8,4 @@ export * from "./use-bubble-insight";
 export * from "./use-encounter-results-page";
 export * from "./use-encounter-review-chat";
 export * from "./use-delete-encounter";
+export * from "./use-replay-encounter";
