@@ -68,7 +68,6 @@ export class CompleteEncounterUseCase {
       const review = await this.encounterReviewPort.generateReview({
         context,
         turns,
-        mockMode: true,
       });
       const saved = await this.encounterRepository.completeWithReview({
         encounter: completed,

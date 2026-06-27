@@ -41,7 +41,6 @@ type EncounterCardProps = {
     };
   };
   onReset?: () => void;
-  onAbandon?: () => void;
   onStart?: () => void;
   onReview?: () => void;
   className?: string;
@@ -51,7 +50,6 @@ export function EncounterCard({
   onStart,
   onReview,
   onReset,
-  onAbandon,
   className,
 }: EncounterCardProps) {
   const {

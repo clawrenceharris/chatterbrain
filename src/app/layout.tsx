@@ -6,7 +6,6 @@ import {
   ModalProvider,
   QueryProvider,
   ThemeProvider,
-  UserProvider,
 } from "@/components/providers";
 import { ChitterChatProvider } from "@/features/ai/presentation/providers/chitter-chat-provider";
 import { Toaster } from "sonner";

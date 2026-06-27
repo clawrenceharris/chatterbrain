@@ -23,7 +23,7 @@ type UserProviderProps = {
 export function UserProvider({ children }: UserProviderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthReady, isLoading } = useAuth();
+  const { user, isAuthReady } = useAuth();
   const isOnboardingRoute = pathname.startsWith("/onboarding");
   const isAuthRoute = pathname.startsWith("/auth");
   const {

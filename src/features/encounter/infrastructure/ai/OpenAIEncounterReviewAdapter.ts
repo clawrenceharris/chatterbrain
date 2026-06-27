@@ -30,10 +30,9 @@ export class OpenAIEncounterReviewAdapter implements EncounterReviewPort {
   async generateReview(input: {
     context: EncounterMachineContext;
     turns: ConversationTurn[];
-    mockMode?: boolean;
   }): Promise<EncounterReviewDraft> {
     if (
-      input.mockMode ||
+      process.env.NEXT_PUBLIC_ENCOUNTER_REVIEW_MOCK === "true" ||
       !process.env.OPENAI_API_KEY ||
       !process.env.OPENAI_PROJECT_ID
     ) {

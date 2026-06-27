@@ -14,7 +14,6 @@ export const config = {
     "/actors/:path*",
     "/library/:path*",
     "/user/:path*",
-    "/onboarding",
     "/account/:path*",
     "/settings/:path*",
     "/api/:path*",
