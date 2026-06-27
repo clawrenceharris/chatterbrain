@@ -14,7 +14,7 @@ import Link from "next/link";
 
 type DomainCardProps = {
   domain: DomainCardResult;
-  index: number;
+  index?: number;
   className?: string;
 };
 

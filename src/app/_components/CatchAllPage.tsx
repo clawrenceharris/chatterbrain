@@ -201,8 +201,9 @@ export function CatchAllPage({
               </h2>
 
               <div className="grid grid-cols-2 grid-rows-2 gap-3">
-                {Object.entries(exploreCards).map(([slug, domain]) => (
+                {Object.entries(exploreCards).map(([slug, domain], index) => (
                   <DomainCard
+                    index={index}
                     key={slug}
                     domain={domainsBySlug[slug]}
                     className={domain.className}
