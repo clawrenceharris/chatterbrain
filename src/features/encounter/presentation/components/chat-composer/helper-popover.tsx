@@ -58,7 +58,11 @@ export function HelperPopover({
         ) : null}
       </PopoverHeader>
 
-      <p>{state.content.body}</p>
+      {state.content.tone ? (
+        <p className="text-lg font-semibold capitalize">{state.content.tone}</p>
+      ) : null}
+
+      {state.content.body ? <p>{state.content.body}</p> : null}
 
       {state.content.suggestions?.length ? (
         <div className="grid max-w-[380px] grid-cols-1 gap-2">

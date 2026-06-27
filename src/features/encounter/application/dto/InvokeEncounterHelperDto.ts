@@ -33,7 +33,8 @@ export type InvokeEncounterHelperActionInput = Omit<
 >;
 
 export type InvokeEncounterHelperOutput = {
-  text: string;
+  text?: string;
+  tone?: string;
   suggestions?: string[];
   rewrittenDraft?: string;
 };

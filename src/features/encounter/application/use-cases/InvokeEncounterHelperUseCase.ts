@@ -15,6 +15,7 @@ type InvokeEncounterHelperResult = Result<
 
 type ParsedHelperResponse = {
   text?: string;
+  tone?: string;
   suggestions?: string[];
   rewrittenDraft?: string;
 };
@@ -24,28 +25,25 @@ const MOCK_RESPONSES: Record<
   InvokeEncounterHelperOutput
 > = {
   "vibe-check": {
-    text: "This draft sounds friendly and direct. If you want it softer, add a short acknowledgement before your main point.",
+    text: "Playful and a little casual — fits the chat, but the joke might land softer with a quick acknowledgement first.",
   },
   rephraser: {
-    text: "Chitter made your draft a little easier to read.",
     rewrittenDraft:
       "I get what you mean. It can be hard when you don't have the words.",
-    suggestions: [
-      "I understand. It can be hard when you don't have the words.",
-    ],
   },
   "response-builder": {
-    text: "Chitter found a few possible ways you could respond next.",
     suggestions: [
-      "I get what you mean. It can be hard when you don't have the words.",
-      "I understand. It can be hard when you don't have the words.",
+      "I hear you — can you tell me more?",
+      "That makes sense. What happened next?",
+      "Got it. How are you feeling about it?",
     ],
   },
   "tone-analyzer": {
-    text: "This message may include a social cue. Notice the feeling behind the words before choosing your response.",
+    tone: "guarded",
+    text: "Short replies and careful wording suggest they're not fully opening up yet.",
   },
   "cue-detector": {
-    text: "Chitter sees a useful cue here: notice what the other person might be feeling before choosing your next line.",
+    text: "They may be hinting at frustration without saying it directly — notice the clipped phrasing.",
   },
 };
 
@@ -92,8 +90,8 @@ export class InvokeEncounterHelperUseCase {
             content: buildEncounterHelperPrompt(input),
           },
         ],
-        temperature: 0.35,
-        maxOutputTokens: 500,
+        temperature: 0.25,
+        maxOutputTokens: 220,
         metadata: {
           feature: "encounter-helper",
           helperId: input.helperId,
@@ -127,9 +125,22 @@ export class InvokeEncounterHelperUseCase {
       .slice(0, 3);
     const rewrittenDraft = parsed?.rewrittenDraft?.trim();
 
+    if (helperId === "rephraser") {
+      return {
+        rewrittenDraft:
+          rewrittenDraft || suggestions?.[0] || fallback.rewrittenDraft,
+      };
+    }
+
+    if (helperId === "tone-analyzer") {
+      return {
+        tone: parsed?.tone?.trim() || fallback.tone,
+        text: parsed?.text?.trim() || fallback.text,
+      };
+    }
+
     if (helperId === "response-builder") {
       return {
-        text,
         suggestions:
           suggestions && suggestions.length > 0
             ? suggestions
@@ -137,16 +148,7 @@ export class InvokeEncounterHelperUseCase {
       };
     }
 
-    if (helperId === "rephraser") {
-      return {
-        text,
-        rewrittenDraft:
-          rewrittenDraft || suggestions?.[0] || fallback.rewrittenDraft,
-        suggestions,
-      };
-    }
-
-    return { text };
+    return { text: text || fallback.text };
   }
 
   private tryParseJson(rawText: string): ParsedHelperResponse | null {

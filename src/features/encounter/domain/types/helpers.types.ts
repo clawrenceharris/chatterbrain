@@ -19,7 +19,8 @@ export type InvokedHelper = {
 
 export type InvokedHelperPayload = {
   id: HelperId;
-  text: string;
+  text?: string;
+  tone?: string;
   actions?: HelperAction[];
 };
 
@@ -74,6 +75,7 @@ export type HelperPopoverContent = {
   title: string;
   description?: string;
   body?: string;
+  tone?: string;
   suggestions?: string[];
 };
 

@@ -1,6 +1,12 @@
 import { getChitterIdentityBlock } from "@/features/ai/persona";
 import type { InvokeEncounterHelperInput } from "../../application/dto/InvokeEncounterHelperDto";
 
+const HELPER_SCOPE_RULES = `HELPER SCOPE (strict — overrides any general coaching habits):
+- Stay inside this helper's single job. Do not stack analysis, meaning, reasoning, and example replies.
+- Never suggest what the user should say unless you are Response Builder.
+- Never rephrase the user's words unless you are Rephraser.
+- Keep outputs short. No paragraphs. No bullet lists in text fields.`;
+
 function formatTranscript(
   history: InvokeEncounterHelperInput["conversationHistory"],
 ) {
@@ -17,40 +23,62 @@ function formatTranscript(
 
 function helperTask(helperId: InvokeEncounterHelperInput["helperId"]) {
   switch (helperId) {
-    case "vibe-check":
-      return `Analyze the user's draft response for tone, clarity, and how it may land with ${"the actor"}. Give one short paragraph of coaching.`;
-    case "rephraser":
-      return "Rewrite the user's draft so it is clearer, warmer, and easier to say out loud. Return one primary rewrite plus up to two alternate rewrites.";
-    case "response-builder":
-      return "Suggest 2-3 short responses the user could send next. Each should fit the conversation, sound natural, and be easy to say.";
-    case "tone-analyzer":
-      return "Analyze the selected message's tone and how it may land. Mention what feeling or intent comes through.";
     case "cue-detector":
-      return "Point out one useful social cue in the selected message. Explain what the other person may be signaling or feeling.";
+      return `Cue Detector — selected message only.
+Spot obvious or hidden social cues: feelings, subtext, pressure, openness, discomfort, or intent.
+State what may need to be noticed. Do NOT suggest a reply, rephrase, or coaching advice.
+Max 2 short sentences.`;
+
+    case "tone-analyzer":
+      return `Tone Analyzer — selected message only.
+Name the tone using 1-2 tone words (examples: neutral, warm, impatient, guarded, sarcastic, anxious, dismissive, curious).
+Optional: one short sentence on why — no reply ideas, no rewrites, no social-cue essay.
+Do NOT include example responses.`;
+
+    case "vibe-check":
+      return `Vibe Check — user draft only.
+Give a light, playful read on the draft's vibe: tone, humor (if any), and whether it matches the conversation's overall vibe.
+Keep it fun and brief. No example responses, no rewrites, no skill lecture.
+Max 2 short sentences.`;
+
+    case "rephraser":
+      return `Rephraser — user draft only.
+Return exactly ONE clearer rewrite the user could send. Same intent, easier to say out loud.
+No alternates. No coaching note. No explanation.`;
+
+    case "response-builder":
+      return `Response Builder — conversation context only.
+Suggest 2-3 short replies the user could send next. Natural, easy to say out loud.
+No analysis, no coaching text, no reasoning.`;
+
     default:
-      return "Help the user practice this conversation.";
+      return "Help the user practice this conversation briefly.";
   }
 }
 
 function responseFormat(helperId: InvokeEncounterHelperInput["helperId"]) {
-  if (helperId === "response-builder") {
-    return `{
-  "text": "One sentence explaining what you noticed or why these responses may work",
-  "suggestions": ["response option 1", "response option 2"]
+  switch (helperId) {
+    case "response-builder":
+      return `{
+  "suggestions": ["response 1", "response 2", "response 3"]
+}`;
+
+    case "rephraser":
+      return `{
+  "rewrittenDraft": "single rewrite only"
+}`;
+
+    case "tone-analyzer":
+      return `{
+  "tone": "impatient",
+  "text": "optional one short sentence max"
+}`;
+
+    default:
+      return `{
+  "text": "short helper output only"
 }`;
   }
-
-  if (helperId === "rephraser") {
-    return `{
-  "text": "One short coaching note about the rewrite",
-  "rewrittenDraft": "Best rewrite of the user's draft",
-  "suggestions": ["alternate rewrite 1", "alternate rewrite 2"]
-}`;
-  }
-
-  return `{
-  "text": "Your coaching response"
-}`;
 }
 
 export function buildEncounterHelperPrompt(
@@ -68,6 +96,8 @@ export function buildEncounterHelperPrompt(
 
 You are helping a user practice a social scenario inside Chatterbrain.
 Stay in coach mode. Do not roleplay as the actor.
+
+${HELPER_SCOPE_RULES}
 
 Scenario:
 - Title: ${input.scenario.title}

@@ -4,11 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { invokeEncounterHelper } from "@/actions/encounter";
-import type { EncounterPageOutput } from "@/features/encounter/application/dto";
+import type {
+  EncounterPageOutput,
+  InvokeEncounterHelperActionInput,
+  InvokeEncounterHelperOutput,
+} from "@/features/encounter/application/dto";
+import { buildEncounterHelperCacheKey } from "@/features/encounter/application/helpers/buildEncounterHelperCacheKey";
 import type {
   ChatComposerContext,
   ChatMessage,
@@ -95,18 +102,13 @@ function buildHelperContext(input: {
 
 function buildPayload(
   helperId: HelperDefinition["id"],
-  result: Awaited<ReturnType<typeof invokeEncounterHelper>>,
+  data: InvokeEncounterHelperOutput,
 ): InvokedHelperPayload {
-  if (!result.success) {
-    throw new Error(result.error.message);
-  }
-
-  const { text, suggestions = [], rewrittenDraft } = result.data;
+  const { text, tone, suggestions = [], rewrittenDraft } = data;
 
   if (helperId === "response-builder") {
     return {
       id: helperId,
-      text,
       actions: suggestions.map((suggestion) => ({
         behavoir: "transform-input" as const,
         text: suggestion,
@@ -114,18 +116,23 @@ function buildPayload(
     };
   }
 
-  if (helperId === "rephraser") {
-    const actions = [rewrittenDraft, ...suggestions]
-      .filter((value): value is string => Boolean(value?.trim()))
-      .map((suggestion) => ({
-        behavoir: "transform-input" as const,
-        text: suggestion,
-      }));
-
+  if (helperId === "rephraser" && rewrittenDraft?.trim()) {
     return {
       id: helperId,
+      actions: [
+        {
+          behavoir: "transform-input" as const,
+          text: rewrittenDraft.trim(),
+        },
+      ],
+    };
+  }
+
+  if (helperId === "tone-analyzer") {
+    return {
+      id: helperId,
+      tone,
       text,
-      actions,
     };
   }
 
@@ -143,32 +150,27 @@ function buildPopoverContent(
     case "response-builder":
       return {
         title: "Response Builder",
-        description:
-          "Chitter found a few possible ways you could respond next:",
-        body: payload.text,
+        description: "Tap one to use it:",
       };
     case "rephraser":
       return {
         title: "Rephraser",
-        description: "Chitter made your draft a little easier to read:",
-        body: payload.text,
+        description: "Tap to use this rewrite:",
       };
     case "vibe-check":
       return {
         title: "Vibe Check",
-        description: "Chitter checked how this might land:",
         body: payload.text,
       };
     case "tone-analyzer":
       return {
         title: "Tone Analyzer",
-        description: "Chitter inspected the tone of this message:",
+        tone: payload.tone,
         body: payload.text,
       };
     case "cue-detector":
       return {
         title: "Cue Detector",
-        description: "Chitter found a useful social cue here:",
         body: payload.text,
       };
     default:
@@ -177,6 +179,42 @@ function buildPopoverContent(
         body: payload.text,
       };
   }
+}
+
+function openHelperPopover(
+  helper: HelperDefinition,
+  data: InvokeEncounterHelperOutput,
+  targetMessageId: string | undefined,
+  setActivePopover: (popover: HelperPopoverState) => void,
+) {
+  const payload = buildPayload(helper.id, data);
+  setActivePopover({
+    helper: {
+      ...helper,
+      payload,
+    },
+    targetMessageId,
+    content: buildPopoverContent(helper.id, payload),
+  });
+}
+
+async function fetchHelperResult(
+  input: InvokeEncounterHelperActionInput,
+  cache: Map<string, InvokeEncounterHelperOutput>,
+): Promise<InvokeEncounterHelperOutput> {
+  const cacheKey = buildEncounterHelperCacheKey(input);
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const result = await invokeEncounterHelper(input);
+  if (!result.success) {
+    throw new Error(result.error.message);
+  }
+
+  cache.set(cacheKey, result.data);
+  return result.data;
 }
 
 export function EncounterHelperProvider({
@@ -197,6 +235,13 @@ export function EncounterHelperProvider({
   const [selectedHelper, setSelectedHelper] = useState<ResolvedHelper | null>(
     null,
   );
+  const helperResultCacheRef = useRef(
+    new Map<string, InvokeEncounterHelperOutput>(),
+  );
+
+  useEffect(() => {
+    helperResultCacheRef.current.clear();
+  }, [encounter.id]);
 
   const handleHelperAction = useCallback(
     (ctx: ChatComposerContext, action: HelperAction) => {
@@ -225,10 +270,9 @@ export function EncounterHelperProvider({
       helper,
       input,
     }: HelperExecutionRequest): Promise<HelperExecutionResult> => {
-      setHelperLoading(helper.id, true);
-
       try {
         if (helper.behavior === "detail-from-message") {
+          setHelperLoading(helper.id, true);
           setTargetingHelper(helper);
           setSelectedMessageId(undefined);
           setActivePopover(null);
@@ -239,16 +283,26 @@ export function EncounterHelperProvider({
           };
         }
 
-        const result = await invokeEncounterHelper({
+        const requestInput: InvokeEncounterHelperActionInput = {
           helperId: helper.id,
           ...buildHelperContext({
             encounter,
             messages,
             draftInput: input,
           }),
-        });
+        };
 
-        const payload = buildPayload(helper.id, result);
+        const cacheKey = buildEncounterHelperCacheKey(requestInput);
+        const isCached = helperResultCacheRef.current.has(cacheKey);
+        if (!isCached) {
+          setHelperLoading(helper.id, true);
+        }
+
+        const data = await fetchHelperResult(
+          requestInput,
+          helperResultCacheRef.current,
+        );
+        const payload = buildPayload(helper.id, data);
         const invokedHelper: InvokedHelper = {
           ...helper,
           payload,
@@ -261,7 +315,9 @@ export function EncounterHelperProvider({
 
         return invokedHelper;
       } finally {
-        setHelperLoading(helper.id, false);
+        if (helper.behavior !== "detail-from-message") {
+          setHelperLoading(helper.id, false);
+        }
       }
     },
     [encounter, messages, setHelperLoading],
@@ -272,27 +328,30 @@ export function EncounterHelperProvider({
       if (!targetingHelper) return;
 
       setSelectedMessageId(message.id);
-      setHelperLoading(targetingHelper.id, true);
+
+      const requestInput: InvokeEncounterHelperActionInput = {
+        helperId: targetingHelper.id,
+        ...buildHelperContext({
+          encounter,
+          messages,
+          targetMessage: message,
+        }),
+      };
+
+      const isCached = helperResultCacheRef.current.has(
+        buildEncounterHelperCacheKey(requestInput),
+      );
 
       try {
-        const result = await invokeEncounterHelper({
-          helperId: targetingHelper.id,
-          ...buildHelperContext({
-            encounter,
-            messages,
-            targetMessage: message,
-          }),
-        });
+        if (!isCached) {
+          setHelperLoading(targetingHelper.id, true);
+        }
 
-        const payload = buildPayload(targetingHelper.id, result);
-        setActivePopover({
-          helper: {
-            ...targetingHelper,
-            payload,
-          },
-          targetMessageId: message.id,
-          content: buildPopoverContent(targetingHelper.id, payload),
-        });
+        const data = await fetchHelperResult(
+          requestInput,
+          helperResultCacheRef.current,
+        );
+        openHelperPopover(targetingHelper, data, message.id, setActivePopover);
       } finally {
         setTargetingHelper(null);
         setHelperLoading(targetingHelper.id, false);
