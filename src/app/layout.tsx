@@ -1,24 +1,33 @@
 import type { Metadata } from "next";
-import { Dongle, Lexend_Deca } from "next/font/google";
-import { AuthProvider } from "@/components/providers/auth-provider";
+import { Cal_Sans, Dongle, Lexend_Deca } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/components/providers/query-provider";
+import {
+  AuthProvider,
+  ModalProvider,
+  QueryProvider,
+  ThemeProvider,
+  UserProvider,
+} from "@/components/providers";
+import { ChitterChatProvider } from "@/features/ai/presentation/providers/chitter-chat-provider";
+import { Toaster } from "sonner";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { User } from "@supabase/supabase-js";
 import { prefetchAuthenticatedAppData } from "@/lib/queries/prefetchAuthenticatedAppData";
-import { UserProvider } from "@/components/providers/user-provider";
-import { Toaster } from "@/components/ui";
+import type { User } from "@supabase/supabase-js";
 
 const dongle = Dongle({
   subsets: ["latin"],
   variable: "--font-body",
   weight: ["300", "400", "700"],
 });
-
 const lexendDeca = Lexend_Deca({
   subsets: ["latin"],
   variable: "--font-heading",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
+});
+const calSans = Cal_Sans({
+  subsets: ["latin"],
+  variable: "--font-primary-heading",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -26,6 +35,7 @@ export const metadata: Metadata = {
   description:
     "Your safe space to practice social skills and demystify social settings ",
 };
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -46,11 +56,17 @@ export default async function RootLayout({
     <html lang="en">
       <body
         suppressHydrationWarning
-        className={`${dongle.variable} ${lexendDeca.variable} font-body antialiased`}
+        className={`${dongle.variable} ${lexendDeca.variable} ${calSans.variable} font-body antialiased`}
       >
         <QueryProvider dehydratedState={dehydratedState}>
           <AuthProvider initialUser={initialUser}>
-            <UserProvider>{children}</UserProvider>
+            <UserProvider>
+              <ThemeProvider>
+                <ChitterChatProvider>
+                  <ModalProvider>{children}</ModalProvider>
+                </ChitterChatProvider>
+              </ThemeProvider>
+            </UserProvider>
           </AuthProvider>
         </QueryProvider>
 

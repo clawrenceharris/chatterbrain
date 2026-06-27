@@ -1,6 +1,6 @@
 export type ProfileCardResult = {
   userId: string;
-  firstName: string;
-  lastName: string | null;
+  username: string;
+  displayName: string | null;
   avatarUrl: string | null;
 };

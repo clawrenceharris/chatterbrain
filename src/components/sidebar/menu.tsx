@@ -14,6 +14,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { useAuth } from "../providers/auth-provider";
+import { useUser } from "../providers/user-provider";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -21,7 +22,8 @@ interface MenuProps {
 
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
-  const menuList = getMenuList(pathname);
+  const { profile } = useUser();
+  const menuList = getMenuList(pathname, profile.username);
   const { signOut } = useAuth();
 
   return (
@@ -55,6 +57,7 @@ export function Menu({ isOpen }: MenuProps) {
                   <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                       <Button
+                        size="sm"
                         variant={
                           (active === undefined && pathname.startsWith(href)) ||
                           active
@@ -62,7 +65,7 @@ export function Menu({ isOpen }: MenuProps) {
                             : "ghost"
                         }
                         className={cn(
-                          "text-muted-foreground mb-1 w-full justify-start rounded-md border-0",
+                          "text-muted-foreground mb-1 w-full justify-start rounded-md border-0 font-medium",
 
                           (active === undefined && pathname.startsWith(href)) ||
                             active
@@ -102,6 +105,7 @@ export function Menu({ isOpen }: MenuProps) {
         <Tooltip delayDuration={100}>
           <TooltipTrigger asChild>
             <Button
+              size="sm"
               onClick={signOut}
               variant="outline"
               className="mt-5 h-10 w-full justify-center"

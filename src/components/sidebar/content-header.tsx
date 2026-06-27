@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { HeaderSearch } from "./header-search";
 import { UserNav } from "./user-nav";
 
 interface NavbarProps {
@@ -12,6 +13,8 @@ interface NavbarProps {
   headerRight?: React.ReactNode;
   className?: string;
   showThemeToggle?: boolean;
+  showSearch?: boolean;
+  showUserNav?: boolean;
 }
 export function ContentHeader({
   title,
@@ -20,6 +23,8 @@ export function ContentHeader({
   headerRight,
   className,
   showThemeToggle = true,
+  showSearch = true,
+  showUserNav = true,
 }: NavbarProps) {
   const router = useRouter();
 
@@ -28,7 +33,8 @@ export function ContentHeader({
       <div
         className={cn("bg-background flex w-full items-center justify-between")}
       >
-        <UserNav showThemeToggle={showThemeToggle} />
+        {showSearch ? <HeaderSearch /> : <div />}
+        {showUserNav ? <UserNav showThemeToggle={showThemeToggle} /> : <div />}
       </div>
       <div className="relative flex w-full flex-1 items-center justify-between pt-6 pb-2">
         <div className="flex h-full w-full items-center gap-3">
@@ -36,7 +42,7 @@ export function ContentHeader({
             <Button
               size="icon"
               aria-label="Go back"
-              variant="ghost"
+              variant="outline"
               onClick={onBack ?? (() => router.back())}
             >
               <ChevronLeft strokeWidth={3} />

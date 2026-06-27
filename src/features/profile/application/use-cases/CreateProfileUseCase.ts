@@ -1,19 +1,19 @@
 import { normalizeError } from "@/shared/utils";
 import { ProfileRepository } from "../../domain/repositories";
-import { AvatarStorage } from "../../domain/services";
+import { UserAvatarStorage } from "../../domain/services";
 import { CreateProfileInput, CreateProfileResult } from "../dto";
 import { fail, ok, Result } from "@/shared/application";
 
 export class CreateProfileUseCase {
   constructor(
     private readonly profileRepository: ProfileRepository,
-    private readonly storage: AvatarStorage,
+    private readonly storage: UserAvatarStorage,
   ) {}
 
   async execute(
     input: CreateProfileInput,
   ): Promise<Result<CreateProfileResult>> {
-    const { userId, firstName, lastName, avatarFile } = input;
+    const { userId, displayName, username, avatarFile } = input;
     let uploadedAvatar: { path: string; url: string | null } | null = null;
 
     try {
@@ -27,16 +27,16 @@ export class CreateProfileUseCase {
 
       // create profile
       const profile = await this.profileRepository.create({
-        firstName,
+        displayName,
+        username,
         userId,
-        lastName,
         avatarUrl: uploadedAvatar?.url ?? null,
       });
 
       return ok({
         userId: profile.userId,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
+        displayName: profile.displayName,
+        username: profile.username,
         avatarUrl: profile.avatarUrl,
       });
     } catch (error) {

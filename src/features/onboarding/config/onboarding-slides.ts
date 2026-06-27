@@ -15,7 +15,6 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     id: "birthday",
     title: "When's your birthday?",
     description: "We use this to tailor scenarios to your age group.",
-    helperText: "Enter your birthday as text for now — e.g. March 15, 2005.",
     skippable: false,
     chitterSays:
       "No pressure — but knowing your birthday helps me suggest situations that feel right for your stage of life.",
@@ -69,12 +68,14 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
           {
             id: "build-confidence",
             label: "Build confidence",
-            description: "Feel more at ease in social situations",
+            description:
+              "Feel more at ease in new or intimidating social situations",
           },
           {
             id: "improve-conversation",
             label: "Improve conversation skills",
-            description: "Keep chats flowing naturally",
+            description:
+              "Learn to read social cues and keep conversations flowing naturally",
           },
           {
             id: "handle-conflict",
@@ -83,13 +84,9 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
           },
           {
             id: "make-friends",
-            label: "Make new friends",
-            description: "Connect with people more easily",
-          },
-          {
-            id: "workplace-skills",
-            label: "Workplace communication",
-            description: "Professional interactions and networking",
+            label: "Build strong relationships",
+            description:
+              "Feel comfortable with new people, make friends and build stronger connections",
           },
         ],
       },
@@ -117,10 +114,20 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
           { id: "sports", label: "Sports" },
           { id: "gaming", label: "Gaming" },
           { id: "reading", label: "Reading" },
+          { id: "writing", label: "Writing" },
           { id: "movies-tv", label: "Movies & TV" },
           { id: "technology", label: "Technology" },
           { id: "nature", label: "Nature & outdoors" },
           { id: "fitness", label: "Fitness" },
+          { id: "travel", label: "Travel & culture" },
+          { id: "science", label: "Science" },
+          { id: "fashion", label: "Fashion & style" },
+          { id: "animals", label: "Animals & pets" },
+          { id: "volunteering", label: "Volunteering" },
+          { id: "food", label: "Food & dining" },
+          { id: "history", label: "History" },
+          { id: "religion", label: "Religion & spirituality" },
+          { id: "politics", label: "Politics & current events" },
         ],
       },
     ],
@@ -129,7 +136,7 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     id: "data-consent",
     title: "One last thing",
     description:
-      "Help us improve your experience by allowing Chatterbrain to use your information.",
+      "Before you start chattering, help us improve your experience by allowing Chatterbrain to use your information.",
     skippable: false,
     chitterSays:
       "To give you the best experience, Chatterbrain uses what you've shared to personalize practice. Your data stays safe with us.",

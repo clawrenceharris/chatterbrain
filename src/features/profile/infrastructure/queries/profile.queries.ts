@@ -3,8 +3,8 @@ import { Prisma } from "@/lib/db/prisma";
 export const profileDetailArgs = {
   select: {
     userId: true,
-    firstName: true,
-    lastName: true,
+    displayName: true,
+    username: true,
     avatarUrl: true,
     birthday: true,
     gender: true,
@@ -17,8 +17,8 @@ export const profileDetailArgs = {
 export const profileCardArgs = {
   select: {
     userId: true,
-    firstName: true,
-    lastName: true,
+    displayName: true,
+    username: true,
     avatarUrl: true,
   },
 } satisfies Prisma.UserProfileDefaultArgs;

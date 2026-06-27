@@ -1,4 +1,5 @@
 "use client";
+import { ThemeToggle } from "@/components/sidebar";
 import { assets } from "@/lib/constants";
 import Image from "next/image";
 
@@ -9,6 +10,7 @@ export default function AuthLayoutClient({
 }) {
   return (
     <div className="page to-primary from-secondary bg-white p-0">
+      <ThemeToggle className="absolute top-4 right-4 z-50" />
       <main className="flex flex-col md:flex-row">
         <div className="relative flex-[0.7]">
           <Image

@@ -4,3 +4,4 @@ export * from "./UpdateProfileInput";
 export * from "./UpdateProfileResult";
 export * from "./ProfileCardResult";
 export * from "./ProfileDetailResult";
+export * from "./CheckUsernameResult";

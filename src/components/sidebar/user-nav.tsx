@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutGrid, LogOut, User } from "lucide-react";
+import { Home, LogOut, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,12 +20,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ThemeToggle } from "./theme-toggle";
+import { ThemeToggle } from "./";
+import { useUser } from "../providers";
 
 type UserNavProps = {
   showThemeToggle?: boolean;
 };
 export function UserNav({ showThemeToggle = true }: UserNavProps) {
+  const { user, profile } = useUser();
   return (
     <div className="flex items-center gap-3">
       <DropdownMenu>
@@ -40,9 +42,14 @@ export function UserNav({ showThemeToggle = true }: UserNavProps) {
                   asChild
                 >
                   <Avatar>
-                    <AvatarImage src="#" alt="Avatar" />
-                    <AvatarFallback className="bg-transparent">
-                      JD
+                    <AvatarImage
+                      src={profile?.avatarUrl ?? undefined}
+                      alt="Avatar"
+                    />
+                    <AvatarFallback>
+                      {profile.displayName?.charAt(0).toUpperCase() ??
+                        profile.username.charAt(0).toUpperCase() ??
+                        ""}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -55,30 +62,41 @@ export function UserNav({ showThemeToggle = true }: UserNavProps) {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm leading-none font-medium">John Doe</p>
+              <p className="text-sm leading-none font-medium">
+                {profile.displayName ?? profile.username}
+              </p>
               <p className="text-muted-foreground text-xs leading-none">
-                johndoe@example.com
+                {user?.email}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem className="hover:cursor-pointer" asChild>
-              <Link href="/dashboard" className="flex items-center">
-                <LayoutGrid className="text-muted-foreground mr-3 h-4 w-4" />
-                Dashboard
+              <Link href="/home" className="flex items-center">
+                <Home
+                  strokeWidth={3}
+                  className="text-muted-foreground mr-3 h-4 w-4"
+                />
+                Home
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="hover:cursor-pointer" asChild>
               <Link href="/account" className="flex items-center">
-                <User className="text-muted-foreground mr-3 h-4 w-4" />
+                <User
+                  strokeWidth={3}
+                  className="text-muted-foreground mr-3 h-4 w-4"
+                />
                 Account
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
-            <LogOut className="text-muted-foreground mr-3 h-4 w-4" />
+            <LogOut
+              strokeWidth={3}
+              className="text-muted-foreground mr-3 h-4 w-4"
+            />
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>

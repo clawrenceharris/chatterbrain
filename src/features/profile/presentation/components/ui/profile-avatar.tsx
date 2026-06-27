@@ -29,11 +29,8 @@ export function ProfileAvatar({
       />
       <AvatarFallback className="rounded-full text-xl group-hover:hidden">
         {profile ? (
-          profile.firstName ? (
-            (profile.firstName?.charAt(0).toUpperCase() ?? "")
-          ) : (
-            (profile.lastName?.charAt(0).toUpperCase() ?? "")
-          )
+          (profile?.displayName?.charAt(0).toUpperCase() ??
+          profile?.username.charAt(0).toUpperCase())
         ) : (
           <UserIcon className="text-muted-foreground size-8" />
         )}

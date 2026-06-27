@@ -34,7 +34,7 @@ export function SheetMenu() {
             variant="link"
             asChild
           >
-            <Link href="/dashboard" className="flex items-center gap-2">
+            <Link href="/home" className="flex items-center gap-2">
               <Image
                 src={"images/logo-text.png"}
                 alt="Logo"

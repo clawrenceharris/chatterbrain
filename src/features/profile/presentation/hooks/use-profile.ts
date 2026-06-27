@@ -1,6 +1,10 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProfile, getProfileDetail } from "@/actions/profile";
+import {
+  getProfile,
+  getProfileDetail,
+  getProfileDetailByUsername,
+} from "@/actions/profile";
 import { profileKeys } from "@/lib/queries/keys";
 import type { ProfileDetailResult } from "../../application/dto";
 
@@ -40,5 +44,22 @@ export function useProfileDetail(userId: string | null) {
       return result.data;
     },
     enabled: !!userId,
+  });
+}
+
+export function useProfileDetailByUsername(username: string | null) {
+  return useQuery({
+    queryKey: profileKeys.detailByUsername(username ?? ""),
+    queryFn: async () => {
+      if (!username) {
+        throw new Error("Username is required to fetch profile.");
+      }
+      const result = await getProfileDetailByUsername(username);
+      if (!result.success) {
+        throw result.error;
+      }
+      return result.data;
+    },
+    enabled: !!username,
   });
 }

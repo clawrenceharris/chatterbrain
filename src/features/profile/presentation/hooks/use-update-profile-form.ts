@@ -12,6 +12,7 @@ import { updateProfileAction } from "@/actions/profile";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileKeys } from "@/lib/queries/keys";
+import { useChangeUsername } from "./use-change-username";
 
 type UseUpdateProfileFormProps = {
   onSuccess?: (result: UpdateProfileResult) => void;
@@ -27,17 +28,17 @@ export const useUpdateProfileForm = ({
   const form = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      firstName: profile.firstName ?? "",
-      lastName: profile.lastName ?? "",
+      displayName: profile.displayName ?? "",
+      username: profile.username,
       avatarFile: null,
     },
   });
-
+  const { checkUsername } = useChangeUsername({ userId: profile.userId, form });
   const updateProfileMutation = useMutation({
     mutationFn: async (data: UpdateProfileFormValues) => {
       const result = await updateProfileAction({
-        firstName: data.firstName,
-        lastName: data.lastName,
+        displayName: data.displayName,
+        username: data.username,
         avatarFile: data.avatarFile,
         userId: profile.userId,
       });
@@ -56,9 +57,11 @@ export const useUpdateProfileForm = ({
   });
   const updateProfile = useCallback(
     async (data: UpdateProfileFormValues) => {
+      const isUsernameAvailable = await checkUsername();
+      if (!isUsernameAvailable) return;
       return await updateProfileMutation.mutateAsync(data);
     },
-    [updateProfileMutation],
+    [checkUsername, updateProfileMutation],
   );
   return {
     form,

@@ -79,7 +79,7 @@ function FormFooter({
           disabled={disabled}
         >
           {isLoading ? (
-            <Loader2 strokeWidth={2.5} className="animate-spin" />
+            <Loader2 strokeWidth={3} className="size-7 animate-spin" />
           ) : (
             submitText
           )}
@@ -131,7 +131,7 @@ export function FormLayout<T extends FieldValues>({
         <form
           id={id}
           onSubmit={form.handleSubmit(handleSubmit)}
-          className={className}
+          className={cn("flex w-full flex-1 flex-col", className)}
           aria-describedby={description}
         >
           <FieldGroup>

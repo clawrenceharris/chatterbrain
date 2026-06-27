@@ -1,6 +1,6 @@
 export type CreateProfileCommand = {
   userId: string;
-  firstName: string;
-  lastName: string | null;
+  displayName: string | null;
+  username: string;
   avatarUrl: string | null;
 };

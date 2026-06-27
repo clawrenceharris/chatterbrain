@@ -79,9 +79,8 @@
   --decor-opacity: 1;
   --decor-blur-opacity: 0.5;
   --motion-scale: 1;
-
+  --font-primary-heading: ui-sans-serif, sans-serif, system-ui;
   --font-body: Dongle, ui-sans-serif, sans-serif, system-ui;
-  --font-primary-heading: Lexend Deca, ui-sans-serif, sans-serif, system-ui;
   --font-heading: Lexend Deca, ui-sans-serif, sans-serif, system-ui;
   --radius: 1rem;
   --radius-soft: 1.5rem;
@@ -594,8 +593,9 @@
   --color-surface-foreground: var(--surface-foreground);
 
   --font-body: var(--font-body);
-  --font-primary-heading: var(--font-primary-heading);
   --font-heading: var(--font-heading);
+  --font-primary-heading: var(--font-primary-heading);
+
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
@@ -619,6 +619,35 @@
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+
+  --animate-typing-dots: typing-dots 1.4s infinite ease-in-out both;
+  --animate-message-slide-in: message-slide-in 0.4s ease-out both;
+
+  @keyframes typing-dots {
+    0%,
+    80%,
+    100% {
+      transform: scale(0.65);
+      opacity: 0.35;
+    }
+
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes message-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* Respect OS-level reduced motion no matter which theme is selected. */
@@ -645,9 +674,12 @@
     @apply text-foreground font-body bg-background selection:bg-selection! selection:text-selection-foreground! relative flex h-dvh w-full w-screen flex-col overflow-y-auto overscroll-y-contain;
   }
 
-  h1,
+  h1 {
+    @apply font-primary-heading tracking-wide;
+  }
   h2,
-  h3 {
+  h3,
+  h4 {
     @apply font-heading;
   }
   main {
@@ -657,7 +689,7 @@
 
 @layer components {
   .page {
-    @apply flex h-full w-full flex-col justify-between gap-3 overflow-hidden p-4;
+    @apply relative flex h-full w-full flex-col justify-between gap-3 overflow-hidden p-4;
   }
   .gradient-background {
     @apply to-primary from-accent dark:to-background dark:from-background bg-linear-to-br;
@@ -671,6 +703,9 @@
   .faded-col {
     @apply mask-[linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)];
   }
+  .faded-row {
+    @apply mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)];
+  }
   .flex-cc {
     @apply flex items-center justify-center;
   }
@@ -679,6 +714,11 @@
   }
   .font-body {
     font-size-adjust: 0.49;
+  }
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
   }
 }
 

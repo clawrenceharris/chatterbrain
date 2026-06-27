@@ -5,6 +5,8 @@ import { PrismaClient } from "@/lib/db/prisma";
 import { UserProfile } from "../../domain/entities";
 import { PrismaProfileMapper } from "../mappers";
 import { UpdateProfileCommand } from "../../domain/types";
+import { CheckUsernameResult } from "../../application/dto";
+import { InvalidUsernameReason } from "../../domain/value-objects";
 
 export class PrismaProfileRepository implements ProfileRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -39,5 +41,21 @@ export class PrismaProfileRepository implements ProfileRepository {
       where: { userId },
     });
     return record ? true : false;
+  }
+
+  async checkUsername(
+    username: string,
+    userId: string,
+  ): Promise<CheckUsernameResult> {
+    const record = await this.prisma.userProfile.findFirst({
+      where: { username, userId: { not: userId } },
+    });
+    return !!record
+      ? {
+          isValid: false,
+          reason: InvalidUsernameReason.ALREADY_EXISTS,
+          message: "Username already exists",
+        }
+      : { isValid: true };
   }
 }

@@ -4,3 +4,4 @@ export * from "./multi-choice-field";
 export * from "./checkbox-field";
 export * from "./form-layout";
 export * from "./before-unload";
+export * from "./search-input";

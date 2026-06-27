@@ -15,8 +15,8 @@ const avatarFileSchema = z
   .refine((f) => f.type.startsWith("image/"), "Please choose an image file");
 
 export const createProfileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().optional(),
+  displayName: z.string().optional(),
+  username: usernameSchema,
   avatarFile: z.union([avatarFileSchema, z.null()]).optional(),
 });
 

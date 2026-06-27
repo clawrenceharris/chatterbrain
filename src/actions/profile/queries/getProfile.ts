@@ -21,7 +21,7 @@ export async function getProfile(
 export async function getProfileDetail(
   userId: string,
 ): Promise<ActionResult<ProfileDetailResult | null>> {
-  const result = await makeProfileReadService().getProfileDetail(userId);
+  const result = await makeProfileReadService().getProfileDetailById(userId);
   if (!result.success) return fail(toActionError(result.error));
   return ok(result.data);
 }
@@ -33,5 +33,14 @@ export async function getProfileCard(
   const result = await service.getProfileCard(userId);
   if (!result.success) return fail(toActionError(result.error));
 
+  return ok(result.data);
+}
+
+export async function getProfileDetailByUsername(
+  username: string,
+): Promise<ActionResult<ProfileDetailResult | null>> {
+  const result =
+    await makeProfileReadService().getProfileDetailByUsername(username);
+  if (!result.success) return fail(toActionError(result.error));
   return ok(result.data);
 }
