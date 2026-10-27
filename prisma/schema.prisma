@@ -25,6 +25,7 @@ model UserProfile {
   encounters    Encounter[]
   scenarioLikes ScenarioLike[]
   scenarioSaves ScenarioSave[]
+  @@map("user_profiles")
 }
 
 model Actor {
@@ -44,6 +45,7 @@ model Actor {
   updatedAt          DateTime    @updatedAt
 
   @@index([slug])
+  @@map("actors")
 }
 
 model Encounter {
@@ -82,6 +84,7 @@ model Encounter {
   @@index([status])
   @@index([actorId])
   @@index([startedAt])
+  @@map("encounters")
 }
 
 // -----------------------------------------------------------------------------
@@ -110,6 +113,7 @@ model ConversationTurn {
   @@index([encounterId])
   @@index([role])
   @@index([createdAt])
+  @@map("conversation_turns")
 }
 
 // -----------------------------------------------------------------------------
@@ -140,6 +144,7 @@ model HelperUse {
   @@index([encounterId])
   @@index([targetTurnId])
   @@index([helperId])
+  @@map("helper_uses")
 }
 
 // -----------------------------------------------------------------------------
@@ -174,6 +179,7 @@ model EncounterReview {
   items EncounterReviewItem[]
 
   @@index([encounterId])
+  @@map("encounter_reviews")
 }
 
 model EncounterReviewItem {
@@ -200,6 +206,7 @@ model EncounterReviewItem {
   @@index([type])
   @@index([evidenceId])
   @@index([criterion])
+  @@map("encounter_review_items")
 }
 
 model ScenarioDomain {
@@ -212,6 +219,7 @@ model ScenarioDomain {
   @@id([scenarioId, domainId])
   @@index([domainId])
   @@index([scenarioId])
+  @@map("scenario_domains")
 }
 
 // -----------------------------------------------------------------------------
@@ -241,6 +249,7 @@ model Domain {
   updatedAt        DateTime         @updatedAt
   imageUrl         String?
   backgroundImageUrl String?
+  @@map("domains")
 }
 
 // -----------------------------------------------------------------------------
@@ -257,6 +266,7 @@ model SearchHistory {
 
   @@index([query])
   @@index([createdAt])
+  @@map("search_histories")
 }
 
 // -----------------------------------------------------------------------------
@@ -277,6 +287,7 @@ model ScenarioLike {
   @@unique([userId, scenarioId])
   @@index([userId])
   @@index([scenarioId])
+  @@map("scenario_likes")
 }
 
 model ScenarioSave {
@@ -291,6 +302,7 @@ model ScenarioSave {
   @@unique([userId, scenarioId])
   @@index([userId])
   @@index([scenarioId])
+  @@map("scenario_saves")
 }
 
 // -----------------------------------------------------------------------------
@@ -367,6 +379,7 @@ model Scenario {
   @@index([difficulty])
   @@index([status])
   @@index([defaultActorId])
+  @@map("scenarios")
 }
 
 // -----------------------------------------------------------------------------
@@ -391,6 +404,7 @@ model ScenarioRecommendation {
   @@unique([sourceScenarioId, targetScenarioId])
   @@index([sourceScenarioId])
   @@index([targetScenarioId])
+  @@map("scenario_recommendations")
 }
 
 enum PracticeLane {
@@ -398,6 +412,7 @@ enum PracticeLane {
   ENCOUNTERS
   SKILL_DRILLS
   GROUP_CHAT_LAB
+  @@map("practice_lanes")
 }
 
 enum Difficulty {
@@ -405,12 +420,14 @@ enum Difficulty {
   REALISTIC
   CHALLENGE
   DIFFICULT
+  @@map("difficulties")
 }
 
 enum ScenarioStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
+  @@map("scenario_statuses")
 }
 
 enum EncounterStatus {
@@ -418,11 +435,13 @@ enum EncounterStatus {
   IN_PROGRESS
   COMPLETED
   ABANDONED
+  @@map("encounter_statuses")
 }
 
 enum ConversationRole {
   USER
   ACTOR
+  @@map("conversation_roles")
 }
 
 enum HelperId {
@@ -431,6 +450,7 @@ enum HelperId {
   REPHRASER
   RESPONSE_BUILDER
   CUE_DETECTOR
+  @@map("helper_ids")
 }
 
 enum SocialSkill {
@@ -451,9 +471,11 @@ enum SocialSkill {
   CONVERSATION_FLOW
   SOCIAL_TIMING
   PERSPECTIVE_TAKING
+  @@map("social_skills")
 }
 
 enum ReviewItemType {
   STRENGTH
   GROWTH_AREA
+  @@map("review_item_types")
 }
