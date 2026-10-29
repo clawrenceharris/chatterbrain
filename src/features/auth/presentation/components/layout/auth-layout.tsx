@@ -10,7 +10,7 @@ interface AuthLayoutProps {
 }
 export function AuthLayout({ children, authType }: AuthLayoutProps) {
   return (
-    <Card className="bg-surface mx-auto h-full w-full max-w-110 overflow-y-auto rounded-none border-0 shadow-none ring-0">
+    <Card className="bg-transparent mx-auto h-full w-full max-w-110 overflow-y-auto rounded-none border-0 shadow-none ring-0">
       <CardContent className="flex h-full items-center">{children}</CardContent>
       <CardFooter className="justify-center text-sm">
         {authType === "sign-up"
