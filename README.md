@@ -24,7 +24,7 @@ Built with feature modules so a feature-heavy coaching product can grow without 
 
 - **Framework:** [Next.js](https://nextjs.org) (App Router)
 - **UI:** React 19, Tailwind CSS, [shadcn/ui](https://ui.shadcn.com)
-- **Data:** PostgreSQL via [Prisma](https://www.prisma.io)
+- **Data:** Supabase via [Prisma](https://www.prisma.io)
 - **Auth:** [Supabase Auth](https://supabase.com/docs/guides/auth)
 - **AI:** OpenAI (dialogue, analysis), ElevenLabs (TTS), speech-to-text API routes
 - **Client state:** XState (encounter turn flow), TanStack Query, Zustand (helpers/UI)

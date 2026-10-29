@@ -412,7 +412,7 @@ enum PracticeLane {
   ENCOUNTERS
   SKILL_DRILLS
   GROUP_CHAT_LAB
-  @@map("practice_lanes")
+  @@map("practice_lane")
 }
 
 enum Difficulty {
@@ -420,14 +420,14 @@ enum Difficulty {
   REALISTIC
   CHALLENGE
   DIFFICULT
-  @@map("difficulties")
+  @@map("difficulty")
 }
 
 enum ScenarioStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
-  @@map("scenario_statuses")
+  @@map("scenario_status")
 }
 
 enum EncounterStatus {
@@ -435,13 +435,13 @@ enum EncounterStatus {
   IN_PROGRESS
   COMPLETED
   ABANDONED
-  @@map("encounter_statuses")
+  @@map("encounter_status")
 }
 
 enum ConversationRole {
   USER
   ACTOR
-  @@map("conversation_roles")
+  @@map("conversation_role")
 }
 
 enum HelperId {
@@ -450,7 +450,7 @@ enum HelperId {
   REPHRASER
   RESPONSE_BUILDER
   CUE_DETECTOR
-  @@map("helper_ids")
+  @@map("helper_id")
 }
 
 enum SocialSkill {
@@ -471,11 +471,11 @@ enum SocialSkill {
   CONVERSATION_FLOW
   SOCIAL_TIMING
   PERSPECTIVE_TAKING
-  @@map("social_skills")
+  @@map("social_skill")
 }
 
 enum ReviewItemType {
   STRENGTH
   GROWTH_AREA
-  @@map("review_item_types")
+  @@map("review_item_type")
 }
