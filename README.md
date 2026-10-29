@@ -2,6 +2,7 @@
 
 Chatterbrain is a social-skills practice app for autistic users. It offers a safe, low-pressure space to rehearse difficult or nuanced social situations before they happen in real life.
 
+Built with feature modules so a feature-heavy coaching product can grow without collapsing — I’m optimizing for product clarity and UI quality, not architecture theater.
 ---
 
 ## Product taxonomy
@@ -75,10 +76,3 @@ src/
 └── types/                  # Shared enums (practice.types)
 ```
 
-Bounded contexts follow clean architecture: `domain` → `application` → `infrastructure` → `presentation`.
-
----
-
-## User-facing language
-
-Use: **Domain**, **Scenario**, **Encounter**, **Actor**, **Helper**, **Practice Lane**.
