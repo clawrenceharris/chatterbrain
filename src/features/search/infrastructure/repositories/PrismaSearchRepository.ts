@@ -95,7 +95,7 @@ export class PrismaSearchRepository implements SearchRepository {
   ): Promise<string[]> {
     const pattern = `%${part}%`;
     const rows = await this.prisma.$queryRaw<{ id: string }[]>`
-      SELECT id FROM "Scenario"
+      SELECT id FROM "scenarios"
       WHERE array_to_string(tags, ' ') ILIKE ${pattern}
     `;
     return rows.map((row) => row.id);

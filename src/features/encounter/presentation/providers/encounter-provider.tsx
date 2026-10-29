@@ -320,7 +320,7 @@ export function EncounterProvider({
 
   const handleDone = useCallback(() => {
     if (!encounter) return;
-    router.push(`/scenarios/${encounter.scenario.slug}`);
+    router.push(`/scenarios/${encounter.scenario.id}`);
   }, [encounter, router]);
   const handleViewResults = useCallback(() => {
     if (!encounter) return;

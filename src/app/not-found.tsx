@@ -3,6 +3,7 @@ import { CatchAllPage } from "@/app/_components/CatchAllPage";
 import { SidebarLayout } from "@/components/sidebar/sidebar-layout";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import { UserProvider } from "@/components/providers";
 
 export default async function NotFound() {
   const cookieStore = await cookies();
@@ -17,9 +18,11 @@ export default async function NotFound() {
 
   if (user) {
     return (
-      <SidebarLayout>
-        <CatchAllPage variant="not-found" />
-      </SidebarLayout>
+      <UserProvider>
+        <SidebarLayout>
+          <CatchAllPage variant="not-found" />
+        </SidebarLayout>
+      </UserProvider>
     );
   } else {
     return <CatchAllPage variant="not-found" />;

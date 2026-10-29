@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js";
 import { LoadingState } from "@/components/states";
 import { CatchAllPage } from "@/app/_components/CatchAllPage";
 import { SidebarLayout } from "@/components/sidebar/sidebar-layout";
+import { UserProvider } from "@/components/providers";
 
 export default function ErrorPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -24,9 +25,11 @@ export default function ErrorPage() {
   }
   if (user) {
     return (
-      <SidebarLayout>
-        <CatchAllPage variant="error" />
-      </SidebarLayout>
+      <UserProvider>
+        <SidebarLayout>
+          <CatchAllPage variant="error" />
+        </SidebarLayout>
+      </UserProvider>
     );
   } else {
     return <CatchAllPage variant="error" />;
