@@ -9,12 +9,15 @@ import { useProfileDetail } from "@/features/profile/presentation/hooks";
 import { Dialog } from "../ui";
 import { CreateProfileModal } from "@/features/profile/presentation/components/modals";
 import { ProfileDetailResult } from "@/features/profile/application/dto";
+import { getUserErrorMessage } from "@/shared/utils";
 
 type UserContextType = {
   user: User;
   profile: ProfileDetailResult;
 };
-const UserContext = createContext<UserContextType | undefined>(undefined);
+
+
+export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 type UserProviderProps = {
   children: React.ReactNode;
@@ -78,7 +81,7 @@ export function UserProvider({ children }: UserProviderProps) {
         <ErrorState
           variant="card"
           title="Error loading profile"
-          message={error.message}
+          message={getUserErrorMessage(error.message)}
           onAction={() => window.location.reload()}
           actionLabel="Refresh"
           onRetry={refetch}
@@ -99,9 +102,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
   if (needsOnboarding && !isOnboardingRoute) {
     return (
-      <div className="centered">
-        <LoadingState />
-      </div>
+        <LoadingState variant="page" />
     );
   }
 
