@@ -6,5 +6,6 @@ export function toActionError(error: ApplicationError): ActionError {
     code: error.code,
     message: error.message,
     field: error.field,
+    cause: error.cause,
   };
 }

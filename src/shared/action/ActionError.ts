@@ -3,6 +3,7 @@ import { AppErrorCode } from "@/types";
 export type ActionError = {
   code: AppErrorCode;
   message: string;
+  cause?: unknown;
   field?: string;
 };
 

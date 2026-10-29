@@ -16,6 +16,9 @@ export class ApplicationError extends Error {
     );
     this.name = "ApplicationError";
   }
+  get cause() {
+    return this.details.cause;
+  }
 
   get code() {
     return this.details.code;
@@ -135,29 +138,29 @@ function normalizePrismaError(
   const normalizedMessage = error.message?.toLowerCase() ?? "";
 
   if (error.code === "P2002") {
-    return new ApplicationError({ code: AppErrorCode.RESOURCE_ALREADY_EXISTS });
+    return new ApplicationError({ code: AppErrorCode.RESOURCE_ALREADY_EXISTS, cause: error});
   }
 
   if (error.code === "P2025") {
-    return new ApplicationError({ code: AppErrorCode.RESOURCE_NOT_FOUND });
+    return new ApplicationError({ code: AppErrorCode.RESOURCE_NOT_FOUND, cause: error });
   }
 
   if (error.code === "P2003") {
-    return new ApplicationError({ code: AppErrorCode.DATABASE_ERROR });
+    return new ApplicationError({ code: AppErrorCode.DATABASE_ERROR, cause: error });
   }
 
   if (error.code === "P2004" || error.code === "P5034") {
-    return new ApplicationError({ code: AppErrorCode.DATABASE_ERROR });
+    return new ApplicationError({ code: AppErrorCode.DATABASE_ERROR, cause: error });
   }
 
   if (
     normalizedMessage.includes("unique constraint") ||
     normalizedMessage.includes("duplicate")
   ) {
-    return new ApplicationError({ code: AppErrorCode.RESOURCE_ALREADY_EXISTS });
+    return new ApplicationError({ code: AppErrorCode.RESOURCE_ALREADY_EXISTS, cause: error });
   }
 
-  return new ApplicationError({ code: AppErrorCode.DATABASE_ERROR });
+  return new ApplicationError({ code: AppErrorCode.DATABASE_ERROR, cause: error });
 }
 
 function normalizeSupabaseError(error: {
@@ -171,18 +174,21 @@ function normalizeSupabaseError(error: {
   if (normalizedMessage.includes("invalid login credentials")) {
     return new ApplicationError({
       code: AppErrorCode.AUTH_INVALID_CREDENTIALS,
+      cause: error
     });
   }
 
   if (normalizedMessage.includes("email not confirmed")) {
     return new ApplicationError({
       code: AppErrorCode.AUTH_EMAIL_NOT_CONFIRMED,
+      cause: error
     });
   }
 
   if (normalizedMessage.includes("user already registered")) {
     return new ApplicationError({
       code: AppErrorCode.AUTH_EMAIL_ALREADY_EXISTS,
+      cause: error
     });
   }
 
@@ -190,11 +196,11 @@ function normalizeSupabaseError(error: {
     normalizedMessage.includes("forbidden") ||
     normalizedMessage.includes("permission denied")
   ) {
-    return new ApplicationError({ code: AppErrorCode.PERMISSION_DENIED });
+    return new ApplicationError({ code: AppErrorCode.PERMISSION_DENIED, cause: error });
   }
 
   if (normalizedMessage.includes("not found") || error.status === 404) {
-    return new ApplicationError({ code: AppErrorCode.RESOURCE_NOT_FOUND });
+    return new ApplicationError({ code: AppErrorCode.RESOURCE_NOT_FOUND, cause: error });
   }
 
   if (
@@ -202,7 +208,7 @@ function normalizeSupabaseError(error: {
     normalizedMessage.includes("payload too large") ||
     error.status === 413
   ) {
-    return new ApplicationError({ code: AppErrorCode.FILE_TOO_LARGE });
+    return new ApplicationError({ code: AppErrorCode.FILE_TOO_LARGE, cause: error });
   }
 
   if (
@@ -210,18 +216,18 @@ function normalizeSupabaseError(error: {
     normalizedMessage.includes("unauthorized") ||
     normalizedMessage.includes("invalid token")
   ) {
-    return new ApplicationError({ code: AppErrorCode.AUTH_UNAUTHENTICATED });
+    return new ApplicationError({ code: AppErrorCode.AUTH_UNAUTHENTICATED, cause: error });
   }
 
   if (error.status === 429 || normalizedMessage.includes("rate limit")) {
-    return new ApplicationError({ code: AppErrorCode.RATE_LIMITED });
+    return new ApplicationError({ code: AppErrorCode.RATE_LIMITED, cause: error });
   }
 
   if (error.status && error.status >= 500) {
-    return new ApplicationError({ code: AppErrorCode.EXTERNAL_SERVICE_ERROR });
+    return new ApplicationError({ code: AppErrorCode.EXTERNAL_SERVICE_ERROR, cause: error });
   }
 
-  return new ApplicationError({ code: AppErrorCode.UNKNOWN_ERROR });
+  return new ApplicationError({ code: AppErrorCode.UNKNOWN_ERROR, cause: error });
 }
 
 export function normalizeError(error: unknown): ApplicationError {
@@ -253,14 +259,14 @@ export function normalizeError(error: unknown): ApplicationError {
 
   // Network/fetch errors
   if (error instanceof TypeError && error.message.includes("fetch")) {
-    return new ApplicationError({ code: AppErrorCode.NETWORK_OFFLINE });
+    return new ApplicationError({ code: AppErrorCode.NETWORK_OFFLINE, cause: error });
   }
 
   if (error instanceof Error) {
-    return new ApplicationError({ code: AppErrorCode.UNKNOWN_ERROR });
+    return new ApplicationError({ code: AppErrorCode.UNKNOWN_ERROR, cause: error });
   }
 
-  return new ApplicationError({ code: AppErrorCode.UNKNOWN_ERROR });
+  return new ApplicationError({ code: AppErrorCode.UNKNOWN_ERROR, cause: error });
 }
 
 // Central error logging
