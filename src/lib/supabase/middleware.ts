@@ -53,6 +53,16 @@ export async function updateSession(request: NextRequest) {
     url.search = "";
     return NextResponse.redirect(url);
   }
+  if (
+    user &&
+    !user.user_metadata.needs_onboarding &&
+    request.nextUrl.pathname.startsWith("/onboarding")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/home";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
 
   return supabaseResponse;
 }

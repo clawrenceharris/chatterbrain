@@ -1,6 +1,7 @@
 import { User } from "@supabase/supabase-js";
 
 export interface AuthProvider {
+  updateUserMetadata(metadata: Record<string, any>): Promise<void>;
   getUserId(): Promise<string | null>;
   getUser(): Promise<User | null>;
   signInWithEmail(email: string, password: string): Promise<User>;

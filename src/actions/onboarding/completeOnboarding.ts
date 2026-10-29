@@ -13,7 +13,7 @@ export async function completeOnboardingAction(
   input: CompleteOnboardingInput,
 ): Promise<ActionResult<CompleteOnboardingResult>> {
   try {
-    const useCase = makeCompleteOnboardingUseCase();
+    const useCase = await makeCompleteOnboardingUseCase();
     const result = await useCase.execute(input);
     if (!result.success) {
       return fail(toActionError(result.error));

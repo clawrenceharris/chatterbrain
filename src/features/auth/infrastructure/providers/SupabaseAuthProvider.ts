@@ -71,4 +71,11 @@ export class SupabaseAuthProvider implements AuthProvider {
     });
     if (error) throw mapSupabaseAuthError(error);
   }
+  async updateUserMetadata(metadata: Record<string, any>): Promise<void> {
+    const { error } = await this.client.auth.updateUser({
+      data: metadata,
+    });
+    console.log("error", error);
+    if (error) throw mapSupabaseAuthError(error);
+  }
 }
